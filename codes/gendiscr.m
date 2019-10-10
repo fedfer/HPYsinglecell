@@ -1,4 +1,4 @@
-% Funzione per campionare da una distributzione discreta
+% function to sample from a discrete distribution 
 
 function y=gendiscr(supp,masses)
 

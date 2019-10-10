@@ -1,8 +1,7 @@
 function [Xs ns]=clusterizza(X)
 
-% calcolo i valori distinti in X  e le frequenze
+% compute the distinct values and relative frequencies
 
 [Xs indici]=unique(sort(X),'legacy');
-% Xs ? l'insieme dei valori distinti, invece indici(k)  contiene gli indici
-% del'ultima occorrenza di Xs in X. 
+% Xs is the set of distict values, index(k) contain the indeces of the last occurrence of Xs in X
 ns=diff([0 indici]);

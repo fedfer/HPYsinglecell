@@ -1,6 +1,5 @@
-% funzione che calcola ogni minchia di volta il coefficiente fattoriale
-% generalizzato e restituisce un vettore un po' stronzo in cui ci sono gli
-% elementi che mi interessano
+% Function to compute the generalized factorial coefficients 
+
 
 function c=loggfc(alpha,n)
 

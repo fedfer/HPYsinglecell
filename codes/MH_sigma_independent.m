@@ -1,4 +1,4 @@
-% MH per l'aggiornamento di sigma e sigma_0
+% MH for sigma and sigma_0
 function [sigma_new]=MH_sigma(sigma_old,theta,n_star)
 
 k=length(n_star);

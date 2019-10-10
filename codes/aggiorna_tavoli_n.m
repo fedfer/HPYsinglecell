@@ -1,5 +1,5 @@
-% funzione per aggiornare soltanto i tavoli e non l'osservazione associata
-% j: indice della popolazione in cui devo aggiornare i tavoli
+% function to update the tables only and not the observations
+% j: index of population in which update the tables
 function [Tj_new]=aggiorna_tavoli_n(j,J,Dati,Tavoli,theta_0,sigma_0,theta,sigma,n_init,M0,V0)
 
 Xj=Dati{j};
@@ -11,8 +11,7 @@ for i=1:n_init(j)
     Tj_i(i)=[];
     Xj_i=Xj;
     Xj_i(i)=[];
-    % trovo i tavoli che mangiano lo stesso piatto x separatamente per i
-    % J ristoranti
+    % Find the tables that eat the same dish seperately for all J restaurants
     T_piatto_x=cell(1,J);
     Tavoli_totali_j=[];
     Tavoli_totali_j_piatto_x=[];
@@ -26,20 +25,18 @@ for i=1:n_init(j)
         end
     end
     njx=length(T_piatto_x{j});
-    % il tavolo può essere uguale a uno di quelli in cui viene mangiato
-    % il piatto x, oppure nuovo: calcolo la probabilità che questo accada
-    
-    % numero tavoli nel primo ristorante
+
+    % the table can be the same as one of which the dish x is eaten, or new
+
+    % number of tables in first restaurant
     Lj=length(unique(Tj_i));
-    % numero totale dei tavoli avendo totlto l'i-esimo
+    % total number of tables without i-th restaurant
     L=Lj+length(unique(Tavoli_totali_j));
     if njx>0
         [Tj_star qj_star]=clusterizza(T_piatto_x{j});
         Lj_x=length(Tj_star);
         L_j_x=length(unique(Tavoli_totali_j_piatto_x));
-        % calcolo il vettore delle probabilità
         Pr=zeros(1,Lj_x+1);
-        % piatto nuovo
         Pr(1)=(Lj_x+L_j_x-sigma_0)*(theta+Lj*sigma)/(theta_0+L);
         Pr(2:Lj_x+1)=(qj_star-sigma);
         Pr=Pr/sum(Pr);

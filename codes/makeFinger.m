@@ -5,7 +5,6 @@ function f=makeFinger(v)
 %         i.e. f(i) is the number of elements that occur exactly i times 
 %         in the vector v
 
-%la prima fct va bene
 h1 = hist(v,min(v):max(v));
 %histcounts2(h1(:,1),h1(:,2))
 %rows and columns start from zero 
