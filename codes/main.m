@@ -2,7 +2,7 @@ clear all;
 close all;
 
 % numero di iterazioni
-Runs=150;
+Runs=50;
 
 %% Insieme dei parametri
 
@@ -10,13 +10,13 @@ Runs=150;
 N=3000;
 
 % numero delle popolazioni
-J=8;
+J=20;
 
 % numero delle specie presenti nelle J popolazioni
 NN=2500*ones(J,1);
 
 % parametri per la Zipf
-Zipfpar=[1.3; 1.3; 1.3; 1.3; 2; 2; 2; 2];
+Zipfpar=[1.3; 1.3; 1.3; 1.3; repelem(2,J - 4).'];
 
 % ampiezza del campione iniziale
 n_init=30*ones(J,1);
@@ -351,13 +351,13 @@ for III=1:Runs
 end
 
 % plotto la scoperta di nuove
-plot(1:addsample,sum(DATAfinal.HPY)/Runs,'r');
-hold on
-plot(1:addsample,sum(DATAfinal.uniform)/Runs,'g');
-plot(1:addsample,sum(DATAfinal.Oracle)/Runs,'b');
-plot(1:addsample,sum(DATAfinal.GoodTuring)/Runs,'k');
+%plot(1:addsample,sum(DATAfinal.HPY)/Runs,'r');
+%hold on
+%plot(1:addsample,sum(DATAfinal.uniform)/Runs,'g');
+%plot(1:addsample,sum(DATAfinal.Oracle)/Runs,'b');
+%plot(1:addsample,sum(DATAfinal.GoodTuring)/Runs,'k');
 
-legend('HPY','Uniform','Oracle','UCB','Location','NorthWest');
+%legend('HPY','Uniform','Oracle','UCB','Location','NorthWest');
 
 M=zeros(1,addsample);
 Final=struct('uniform',M,'Oracle',M,'GoodTuring',M,'GoodTuring2',M,'GoodTuring3',M);
@@ -367,5 +367,6 @@ Final.HPY=sum(DATAfinal.HPY)/Runs;
 Final.GoodTuring=sum(DATAfinal.GoodTuring)/Runs;
 Final.GoodTuring2=sum(DATAfinal.GoodTuring2)/Runs;
 Final.GoodTuring3=sum(DATAfinal.GoodTuring3)/Runs;
-xlswrite('unif.xls',transpose(Final.HPY))
+xlswrite('HPY.xls',transpose(Final.HPY))
+xlswrite('GT.xls',transpose(Final.HPY))
 % unif= csvread('unif.csv');

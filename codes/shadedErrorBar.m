@@ -76,6 +76,8 @@ params.CaseSensitive = false;
 params.addParameter('lineProps', '-k', @(x) ischar(x) | iscell(x));
 params.addParameter('transparent', true, @(x) islogical(x) || x==0 || x==1);
 params.addParameter('patchSaturation', 0.2, @(x) isnumeric(x) && x>=0 && x<=1);
+params.addParameter('LineStyle',@(x) ischar(x) | iscell(x));
+
 
 params.parse(varargin{:});
 
@@ -83,6 +85,7 @@ params.parse(varargin{:});
 lineProps =  params.Results.lineProps;
 transparent =  params.Results.transparent;
 patchSaturation = params.Results.patchSaturation;
+linestyle = params.Results.LineStyle;
 
 if ~iscell(lineProps), lineProps={lineProps}; end
 
@@ -123,7 +126,7 @@ end
 initialHoldStatus=ishold;
 if ~initialHoldStatus, hold on,  end
 
-H = makePlot(x,y,errBar,lineProps,transparent,patchSaturation);
+H = makePlot(x,y,errBar,lineProps,transparent,patchSaturation,linestyle);
 
 if ~initialHoldStatus, hold off, end
 
@@ -133,12 +136,12 @@ end
 
 
 
-function H = makePlot(x,y,errBar,lineProps,transparent,patchSaturation)
+function H = makePlot(x,y,errBar,lineProps,transparent,patchSaturation,linestyle)
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Plot to get the parameters of the line
 
-    H.mainLine=plot(x,y,lineProps{:});
+    H.mainLine=plot(x,y,lineProps{:},'LineStyle',linestyle,'LineWidth',2.3);
 
 
     % Work out the color of the shaded region and associated lines.
@@ -159,10 +162,6 @@ function H = makePlot(x,y,errBar,lineProps,transparent,patchSaturation)
     %Calculate the error bars
     uE=y+errBar(1,:);
     lE=y-errBar(2,:);
-
-
-    %Add the patch error bar
-
 
 
     %Make the patch
@@ -186,8 +185,8 @@ function H = makePlot(x,y,errBar,lineProps,transparent,patchSaturation)
 
 
     %Make pretty edges around the patch. 
-    H.edge(1)=plot(x,lE,'-','color',edgeColor);
-    H.edge(2)=plot(x,uE,'-','color',edgeColor);
+    %H.edge(1)=plot(x,lE,'color',edgeColor,'LineStyle',linestyle,'LineWidth',0.5);
+    %H.edge(2)=plot(x,uE,'color',edgeColor,'LineStyle',linestyle,'LineWidth',0.5);
 
 
 
