@@ -2,7 +2,7 @@ clear all;
 close all;
 
 % add path for Computing
-addpath('/work/sta790/ff31/HPYsinglecell')  
+addpath('/work/sta790/ff31/HPYsinglecell/codes')  
 
 %add the Good-Tulming estimator of Bianca
 
