@@ -1,4 +1,4 @@
-% aggiorno gli iperparametri dalle full conditionals secondo 4 MH
+% update parameters using 4 MH
 
 function  [ alpha, d ,gamma ,nu]=MCMC_iperparametri(mjk,m_j_dot,m_dd,J,nn,iter1,burnin1,alpha,d,gamma,nu,bigK)
 
@@ -9,8 +9,8 @@ M_gamma=zeros(iter1-burnin1,1);
 
 for y=1:iter1
     for j=1:J
-        % aggiornamento dei parametri
-        % aggiorno alpha
+        
+        % update alpha
         alphaprop=exprnd(1);
         accept=gammaln((alphaprop/d(j))+m_j_dot(j))-gammaln(alphaprop+nn(j))-...
             gammaln((alpha(j)/d(j))+m_j_dot(j))+gammaln(alpha(j)+nn(j))+...
@@ -21,7 +21,7 @@ for y=1:iter1
         if (bern_accept==1)
             alpha(j)=alphaprop;
         end
-        % aggiorno d
+        % update d
         dprop=unifrnd(0,1);
         loggfc_dprop=loggfc(dprop,nn(j));
         loggfc_d=loggfc(d(j),nn(j));
@@ -36,7 +36,7 @@ for y=1:iter1
         end
     end
     
-    % aggiorno nu
+    % update nu
     nuprop=unifrnd(0,1);
     loggfc_nuprop=loggfc(nuprop,m_dd);
     loggfc_nu=loggfc(nu,m_dd);
@@ -49,7 +49,7 @@ for y=1:iter1
     if U<=acceptprob
         nu=nuprop;
     end
-    % aggiorna gamma
+    % update gamma
     gammaprop=exprnd(1);
     accept=gammaln((gammaprop/nu)+bigK)+gammaln(gammaprop)-gammaln(gammaprop/nu)-...
         gammaln(gammaprop+m_dd)-gammaln((gamma/nu)+bigK)-gammaln(gamma)+gammaln(gamma/nu)+gammaln(gamma+m_dd);

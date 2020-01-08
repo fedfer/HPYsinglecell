@@ -10,26 +10,25 @@ for i=(n1+1):(n1+m1)
     T1_i(i)=[];
     X_i=[X1_i X2];
     T_i=[T1_i T2];
-    % clusterizzazione di tutto il franchise
+    % cluster the franchise
     [X_star T_star XT_star n_star q_star l_star] = distinti(X_i, T_i);
-    % funzione ismember: mi chiedo se i tavoli dell'intero franchise staino
-    % anche nel primo rstornate. Calcolo i valori che mi interessano per il
-    % primo ristorante
+
+    % function ismember: if the table of the entire franchise are in the first restaurant
+    % compute the values for first restaurant
+
     logical_T=ismember(T_star,T1_i);
-    % mi restingo ai tavoli del primo ristorante
     indici1=(logical_T==1);
     XT1_star=XT_star(:,indici1);
     q1_star=q_star(indici1);
     kj=length(X_star);
-    % calcolo il vettore delle probabilità
     L=length(q_star);
     L1=length(q1_star);
     Pr=zeros(1,L1+kj+1);
-    % probabilità di tavolo nuovo e piatto nuovvo
+    % probability of new table and new dish
     Pr(1)=(theta_0+kj*sigma_0)*(theta+L1*sigma)/((theta_0+L)*(theta+n1+m1-1));
-    % probabilità di tavolo nuovo e osservazione vecchia
+    % probability of old table and old dish
     Pr(2:kj+1)=(theta+L1*sigma)*(l_star-sigma_0)/((theta_0+L)*(theta+n1+m1-1));
-    % probabilità di tavolo vecchio e piatto già servito
+    % probability of old table and old dish
     Pr(kj+2:L1+kj+1)=(q1_star-sigma)/(theta+n1+m1-1);
     
     Pr_cum=cumsum(Pr);

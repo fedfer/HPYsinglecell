@@ -1,9 +1,6 @@
-% funzione che calcola la discovery probability e la media delle nuove
-% specie osservate nelle prossime m osservazioni per
-% porzioni  del campione di 20, 40, 60, 80 , 100%
-% considero il campione di ampiezza successiva m solo per il primo dataset,
-% perché voglio calcolare la discovery probability solo per il primo
-% dataset
+% function that computes the discovery probability and the mean of new species
+% for the next m observations in a sample of 20, 40, 60, 80 , 100%
+
 
 function [specie_future media media_quantili P_posterior Valori_predittiva media_pr_nuova media_pr_nuova_quantili...
     Probabilita_nuova M   media_nuove_X1_non_X2  media_nuove_X1_non_X2_quantili ...
@@ -20,17 +17,14 @@ X2_star=clusterizza(X2);
 k2=length(X2_star);
 k=length(unique([X1_star X2_star]));
 
-% voglio calcolare le specie future che sono state campionate nella
-% previsione ad m passi presenti nel secondo dataset ma non nel primo
-specie_distinte_X2=ismember(X2_star,X1_star); % ritorna un 1 quando X2_star è comune anche ad X1_star
-specie_distinte_X2=X2_star(specie_distinte_X2==0); % specie presenti in X2 ma non in X1 all'inizio
+
+specie_distinte_X2=ismember(X2_star,X1_star); 
+specie_distinte_X2=X2_star(specie_distinte_X2==0); 
 logical_species=ismember(X1_star,X2_star);
 specie_distinte_X1=X1_star(logical_species==0);
 specie_comuni=X1_star(logical_species==1);
 
-% calcolo la media della probabilità di osservare un nuovo gene, su
-% entrambi i campioni, cioè non deve mai essere stato osservato, in nessuna
-% libreria. Anche la discovery probability su tutto
+
 Probabilita_nuova=zeros(N,length(M));
 specie_future=zeros(N,length(M));
 osservazioni_nuove_X1_non_X2=zeros(N,length(M));
@@ -56,7 +50,7 @@ media_vecchie_condivise_quantili=zeros(length(M),2);
 media_nuove=zeros(1,length(M));
 media_nuove_quantili=zeros(length(M),2);
 for i=1:length(M)
-    % a posteriori per n=M(i)
+
     m=M(i);
     M_Xnm1=M_X1(:,1:n1+m);
     M_Tnm1=M_T1(:,1:n1+m);
@@ -79,10 +73,9 @@ for i=1:length(M)
         Probabilita_nuova(j,i)=(theta_0+kj*sigma_0)*(theta+L1*sigma)/...
             ((theta_0+L1+L2)*(theta+n1+m));
         specie_future(j,i)=kj-k;
-        % queste sono le osservazioni campionate dalle distinte proprie di X1
-        % : posso anche contarle più volte
+
         osservazioni_nuove_X1_non_X2(j,i)=sum(ismember(Xnm1,specie_distinte_X2));
-        % qui come prima ma prendo le distinte
+
         Xnm1_star=clusterizza(Xnm1);
         specie_nuove_X1_non_X2(j,i)=sum(ismember(Xnm1_star,specie_distinte_X2));
         osservazioni_vecchie_X1_non_X2(j,i)=sum(ismember(Xnm1,specie_distinte_X1));
@@ -90,12 +83,10 @@ for i=1:length(M)
         osservazioni_nuove(j,i)=sum(1-ismember(Xnm1,[X1_star X2_star]));
         j
     end
-    % la funzione clusterizza prende in ingresso dei vettori riga
     [X_local n_local]=clusterizza(specie_future(:,i)');
     Valori_predittiva{i}=X_local';
     P_posterior{i}=n_local';
     clear X_local n_local;
-    % normalizzo le frequneze
     sum(P_posterior{i})
     P_posterior{i}=P_posterior{i}/sum(P_posterior{i});
     media(i)=sum(Valori_predittiva{i}.*P_posterior{i});
@@ -103,9 +94,8 @@ for i=1:length(M)
     media_pr_nuova(i)=sum(Probabilita_nuova(:,i))/N;
     media_quantili(i,:)= quantile(Valori_predittiva{i},[0.025 0.975]);
     media_pr_nuova_quantili(i,:)=quantile(Probabilita_nuova(:,i),[0.025 0.975]);
-    % calcolo la media delle m specie campionate nella previsione ad m
-    % passi di X1 già presenti nel campione di base di X2 ma non in quello
-    % di X1
+
+ 
     media_nuove_X1_non_X2(i)=sum(osservazioni_nuove_X1_non_X2(:,i))/N;
     media_nuove_X1_non_X2_quantili(i,:)=quantile(osservazioni_nuove_X1_non_X2(:,i),[0.025 0.975]);
     media_distinte_nuove_X1_non_X2(i)=sum(specie_nuove_X1_non_X2(:,i))/N;

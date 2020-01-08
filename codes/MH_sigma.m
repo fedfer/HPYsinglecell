@@ -1,4 +1,4 @@
-% MH per l'aggiornamento di sigma: caso della proposal uniforme
+% MH for sigma
 function [sigma_new acc]=MH_sigma(sigma_old,theta,q1_star)
 
 k1=length(q1_star);

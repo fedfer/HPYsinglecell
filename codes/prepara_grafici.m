@@ -1,4 +1,4 @@
-% programma per graficare i risultati a posteriori e a priori
+% plots
 clear all;
 close all;
 

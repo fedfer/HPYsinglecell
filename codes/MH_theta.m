@@ -1,4 +1,4 @@
-% MH per l'aggiornamento di theta e theta_0 con proposal exp(1)
+% MH update theta and theta_0 with proposal exp(1)
 function [theta_new rho]=MH_theta(theta_old,sigma,Lj,nj)
 
 % come proposal scelgo exponenziale

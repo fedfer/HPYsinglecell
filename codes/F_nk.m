@@ -2,6 +2,7 @@
 %observing k distinct values in (Y_1,....,Y_n) given the hyperparameters
 %I take as input the logarighm of C(n,k,sigma) since I compute it beforehands 
 %in order to save space
+
 function [val]=F_nk(n,k,sigma,theta,log_C)
     val_log = 0;
     for r=1:(k-1)
