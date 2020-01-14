@@ -25,7 +25,7 @@ J=100;
 
 % Reviewer Answer 6 
 % numero totale delle specie tra tutte le popolazioni
-N=2000;
+N = 5000;
 % parametri per la Zipf
 Zipfpar=[repelem(2,33).'; repelem(2.1,33).'; repelem(1.9,34).'];
 
