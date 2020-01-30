@@ -155,8 +155,8 @@ M_parametri_storage = repmat(M_parametri_ini,Runs,addsample,1);
 %% Algoritmi vari per scegliere da dove campionare la prossima
 % osservazione: Unif, HPY Oracle GT
 
-%parfor III=1:Runs
-for III=1:Runs
+parfor III=1:Runs
+%for III=1:Runs
     % Uniform sampling
     supp=1:J;
     masses=ones(1,J)/J;
