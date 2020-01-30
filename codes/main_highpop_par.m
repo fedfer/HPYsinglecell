@@ -4,8 +4,8 @@ clear all;
 close all;
 
 % add path for Computing
-%addpath('/work/sta790/ff31/HPYsinglecell/codes')  
-addpath('/Users/felpo/MATLAB/projects/untitled/codes')  
+addpath('/work/sta790/ff31/HPYsinglecell/codes')  
+% addpath('/Users/felpo/MATLAB/projects/untitled/codes')  
 
 %add the Good-Tulming estimator of Bianca
 
