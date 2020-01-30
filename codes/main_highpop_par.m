@@ -11,41 +11,36 @@ addpath('/Users/felpo/MATLAB/projects/untitled/codes')
 
 % numero di iterazioni su cui fare average
 Runs=50;
+%Runs=5;
 
 % numero delle popolazioni
-J=2;
+J=100;
 
 % Setting paper 
 % numero totale delle specie tra tutte le popolazioni
-%N=20000;
+N=2000;
 % parametri per la Zipf
-%Zipfpar=[1.3; 1.3; 1.3; 1.3; repelem(2,J - 4).'];
-% numero delle specie presenti nelle J popolazioni
-%NN=2500*ones(J,1);
-
-
-% Reviewer Answer 6 
-% numero totale delle specie tra tutte le popolazioni
-N = 50;
-% parametri per la Zipf
-%Zipfpar=[repelem(2,33).'; repelem(2.1,33).'; repelem(1.9,34).'];
-Zipfpar=[2; 2];
-
+Zipfpar=[1.3; 1.3; 1.3; 1.3; repelem(2,J - 4).'];
 % numero delle specie presenti nelle J popolazioni
 NN=250*ones(J,1);
 
 
+% Reviewer Answer 6 
+% parametri per la Zipf
+Zipfpar=[repelem(2,33).'; repelem(2.1,33).'; repelem(1.9,34).'];
+% Zipfpar=[2; 2];
+
 % numero di iterazioni in MCMC per il numero di tavoli e dei parametri di
 % HPY dato il campione iniziale
-%iter=35000;
-%burnin=15000;
-iter=350;
-burnin=150;
+iter=35000;
+burnin=15000;
+%iter=350;
+%burnin=150;
 
 % Numero di iterazioni per il particle filter: il numero delle iterazioni
 % deve essere inferiore a iter-burnin
-%N_iter=1000;
-N_iter=100;
+N_iter=1000;
+% N_iter=100;
 
 % normalizing parameter of GT strategy, in order to give some prob to be selected to 
 % populations that have u_Gt = 0
@@ -54,7 +49,7 @@ alpha_GT = 0.1;
 % ampiezza del campione iniziale
 n_init=20*ones(J,1);
 % lunghezza del campione addizionale
-addsample=500;
+addsample=50;
 % units sampled each additional trial
 n_inc = 50;
 
@@ -160,7 +155,8 @@ M_parametri_storage = repmat(M_parametri_ini,Runs,addsample,1);
 %% Algoritmi vari per scegliere da dove campionare la prossima
 % osservazione: Unif, HPY Oracle GT
 
-parfor III=1:Runs
+%parfor III=1:Runs
+for III=1:Runs
     % Uniform sampling
     supp=1:J;
     masses=ones(1,J)/J;
