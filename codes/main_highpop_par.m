@@ -4,8 +4,8 @@ clear all;
 close all;
 
 % add path for Computing
-% addpath('/work/sta790/ff31/HPYsinglecell/codes')  
-addpath('/Users/felpo/MATLAB/projects/untitled/codes')  
+addpath('/work/sta790/ff31/HPYsinglecell/codes')  
+% addpath('/Users/felpo/MATLAB/projects/untitled/codes')  
 
 %add the Good-Tulming estimator of Bianca
 
@@ -32,14 +32,14 @@ Zipfpar=[repelem(2,33).'; repelem(2.1,33).'; repelem(1.9,34).'];
 
 % numero di iterazioni in MCMC per il numero di tavoli e dei parametri di
 % HPY dato il campione iniziale
-iter=35;
-burnin=15;
+iter=35000;
+burnin=15000;
 %iter=350;
 %burnin=150;
 
 % Numero di iterazioni per il particle filter: il numero delle iterazioni
 % deve essere inferiore a iter-burnin
-N_iter=10;
+N_iter=1000;
 % N_iter=100;
 
 % normalizing parameter of GT strategy, in order to give some prob to be selected to 
