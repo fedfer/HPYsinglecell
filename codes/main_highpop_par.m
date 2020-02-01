@@ -149,7 +149,7 @@ d = repmat(d,Runs,1);
 M_parametri_ini=M_parametri(end-N_iter+1:end,:);
 
 % storage 
-M_parametri_storage = repmat(M_parametri_ini,Runs,addsample,1);
+% M_parametri_storage = repmat(M_parametri_ini,Runs,addsample,1);
 
 
 %% Algoritmi vari per scegliere da dove campionare la prossima
@@ -375,14 +375,14 @@ parfor III=1:Runs
     III
     
     % Storage just for one iteration of algorithm 
-    M_parametri_storage(III,:,i) = M_parametri;
+    % M_parametri_storage(III,:,i) = M_parametri;
     
     
 end
 
 %to save workspace
-M_par_save = M_parametri_storage(1,:,:);
-clear M_parametri_storage; 
+%M_par_save = M_parametri_storage(1,:,:);
+%clear M_parametri_storage; 
 save('J100_review_zipf.mat')
 
 %save weights and add sample units
