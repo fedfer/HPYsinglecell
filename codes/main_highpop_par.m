@@ -86,10 +86,10 @@ for i=1:J
     freq2=sum(freq1.^(-Zipfpar(i)));
     for j=1:NN(i)
         % Zipf
-        freq{i}(j)=((1/j)^Zipfpar(i))/freq2;
+        % freq{i}(j)=((1/j)^Zipfpar(i))/freq2;
         
         % Uniform
-        % freq{i}(j) = freq1;
+        freq{i}(j) = freq1;
     end
 end
 
@@ -383,7 +383,7 @@ end
 %to save workspace
 %M_par_save = M_parametri_storage(1,:,:);
 %clear M_parametri_storage; 
-save('J100_review_zipf.mat')
+save('J100_review_unif.mat')
 
 %save weights and add sample units
 %xlswrite('HPY.xls',transpose(sum(DATAfinal.HPY)/Runs));
