@@ -89,7 +89,7 @@ for i=1:J
         % freq{i}(j)=((1/j)^Zipfpar(i))/freq2;
         
         % Uniform
-        freq{i}(j) = freq1;
+        freq{i}(j) = 1/NN(i);
     end
 end
 
