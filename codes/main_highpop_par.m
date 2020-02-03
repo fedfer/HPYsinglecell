@@ -11,10 +11,11 @@ addpath('/work/sta790/ff31/HPYsinglecell/codes')
 
 % numero di iterazioni su cui fare average
 Runs=50;
-%Runs=5;
+Runs=5;
 
 % numero delle popolazioni
-J=100;
+% J=100;
+J = 10;
 
 % Setting paper 
 % numero totale delle specie tra tutte le popolazioni
@@ -27,20 +28,20 @@ NN=250*ones(J,1);
 
 % Reviewer Answer 6 
 % parametri per la Zipf
-Zipfpar=[repelem(2,33).'; repelem(2.1,33).'; repelem(1.9,34).'];
+% Zipfpar=[repelem(2,33).'; repelem(2.1,33).'; repelem(1.9,34).'];
 % Zipfpar=[2; 2];
 
 % numero di iterazioni in MCMC per il numero di tavoli e dei parametri di
 % HPY dato il campione iniziale
-iter=35000;
-burnin=15000;
-%iter=350;
-%burnin=150;
+% iter=35000;
+% burnin=15000;
+iter=350;
+burnin=150;
 
 % Numero di iterazioni per il particle filter: il numero delle iterazioni
 % deve essere inferiore a iter-burnin
-N_iter=1000;
-% N_iter=100;
+% N_iter=1000;
+N_iter=100;
 
 % normalizing parameter of GT strategy, in order to give some prob to be selected to 
 % populations that have u_Gt = 0
@@ -49,7 +50,8 @@ alpha_GT = 0.1;
 % ampiezza del campione iniziale
 n_init=20*ones(J,1);
 % lunghezza del campione addizionale
-addsample=50;
+%addsample=50;
+addsample=5;
 % units sampled each additional trial
 n_inc = 50;
 
@@ -383,7 +385,7 @@ end
 %to save workspace
 %M_par_save = M_parametri_storage(1,:,:);
 %clear M_parametri_storage; 
-save('J100_review_unif.mat')
+save('J100_try.mat');
 
 %save weights and add sample units
 %xlswrite('HPY.xls',transpose(sum(DATAfinal.HPY)/Runs));
