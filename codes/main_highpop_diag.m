@@ -135,8 +135,8 @@ d = repmat(d,Runs,1);
 M_parametri_ini = M_parametri(end-N_iter+1:end,:);
 
 % storage 
-M_parametri_storage = repmat(M_parametri_ini,addsample,1);
-
+M_parametri_storage = zeros([size(M_parametri_ini), addsample]);
+size(M_parametri_storage)
 
 %% Algoritmi vari per scegliere da dove campionare la prossima
 % osservazione: Unif, HPY Oracle GT
@@ -361,7 +361,7 @@ for III=1:Runs
     III
     
     % Storage just for one iteration of algorithm 
-    M_parametri_storage(III,:,i) = M_parametri;
+    M_parametri_storage(:,:,i) = M_parametri;
     
     
 end
