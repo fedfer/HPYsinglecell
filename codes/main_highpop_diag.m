@@ -339,6 +339,8 @@ for III=1:Runs
         end
         GT_data{armchosenGT} = [GT_data{armchosenGT} newobsGT'];
         
+        % Storage
+        M_parametri_storage(:,:,i) = M_parametri;
     end
     
     % risultati MCMC
@@ -360,8 +362,6 @@ for III=1:Runs
     
     III
     
-    % Storage just for one iteration of algorithm 
-    M_parametri_storage(:,:,i) = M_parametri;
     
     
 end
