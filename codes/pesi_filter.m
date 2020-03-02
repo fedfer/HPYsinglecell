@@ -12,7 +12,7 @@ for jj=1:N_iter
     nu=medie_mx(jj,2*J+2);
 Phi=0;
 for j=1:J
-    % compute l'EPPF for jth restaurant (explog)
+    % compute the EPPF for jth restaurant (explog)
     vec_j=1:(m_j_dot(j)-1);
     % max of n_j.k for generalized factorial coefficient
     max_nj=max(n_j_dot_k(j,:));
@@ -21,7 +21,7 @@ for j=1:J
     % generate the full matrix
     LogC=generalized_factorial(max_nj,max_mj,d(j));
     % compute for likelihood
-    %big K is the number of unique values
+    % big K is the number of unique values
     vec_loggfc=zeros(1,bigK);
     for ii=1:bigK
         vec_loggfc(ii)=LogC(n_j_dot_k(j,ii)+1,mjk(j,ii)+1);

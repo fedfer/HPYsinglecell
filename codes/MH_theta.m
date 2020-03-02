@@ -1,7 +1,7 @@
 % MH update theta and theta_0 with proposal exp(1)
 function [theta_new rho]=MH_theta(theta_old,sigma,Lj,nj)
 
-% come proposal scelgo exponenziale
+% exponential proposal distribution
 
 theta_p=exprnd(1);
 

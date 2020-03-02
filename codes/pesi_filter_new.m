@@ -16,6 +16,7 @@ for jj=1:N_iter
     U=unifrnd(0,1);
     ind=find(U<g_cum);
     ind=ind(1);
+    % step 2 of Algorithm 2
     M_iperparametri_new_unnormalized(jj,:)=mvnrnd(medie_mx(ind,:),h^2*cov_parametri);
     alpha=M_iperparametri_new_unnormalized(jj,1:J);
     d=M_iperparametri_new_unnormalized(jj,(J+1):(2*J));
