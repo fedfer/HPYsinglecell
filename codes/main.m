@@ -1,19 +1,22 @@
 clear all;
 close all;
 
-% numero di iterazioni
-Runs=50;
 % number of iterations
-Runs=150;
+% Runs=50;
+Runs=2;
 
 
 %% Parameters
+% total number of populations
+J = 5;
 
 % total number of species
+%N=300;
 N=3000;
 
 % number of species in each pop
-NN=2500*ones(J,1);
+%NN=250*ones(J,1);
+NN=250*ones(J,1);
 
 % parametri per la Zipf
 Zipfpar=[1.3; 1.3; 1.3; 1.3; repelem(2,J - 4).'];
@@ -21,15 +24,19 @@ Zipfpar=[1.3; 1.3; 1.3; 1.3; repelem(2,J - 4).'];
 % initial sample
 n_init=30*ones(J,1);
 % additional samples
-addsample=300;
+% addsample=300;
+addsample=5;
 
 % number of MCMC iterations
-iter=35000;
-burnin=15000;
+% iter=35000;
+% burnin=15000;
+iter=350;
+burnin=150;
 
 % number of iterations for particle filter
 % smaller than iter-burnin
-N_iter=1000;
+% N_iter=1000;
+N_iter=100;
 
 % parameters Good-Turing
 C=(1+sqrt(2))*sqrt(3);
@@ -236,6 +243,13 @@ for III=1:Runs
         end
         
         % update HPY hyperparameters
+        % aggiungo una varaibile che mi dice che cosa aggiorno
+        % TP=2 Tavolo e piatto nuovo
+        % TP=1 Tavolo nuovo e piatto vecchio
+        % TP=0 Tavolo vecchio e piatto vecchio
+        % aggiornamento dei tavoli per HPY
+        TP=0;
+        olddistinct=find(KuniHPY==newobsHPY);
         if sum(KuniHPY==newobsHPY)==0
             bigK=bigK+1;
             m_j_dot(armchosen)=m_j_dot(armchosen)+1;
@@ -247,6 +261,7 @@ for III=1:Runs
             mjk=[mjk , zeros(J,1)];
             nj_dot_k(armchosen,bigK)=1;
             mjk(armchosen,bigK)=1;
+            TP=2;
         else
             
 
@@ -261,6 +276,7 @@ for III=1:Runs
                 m_dot_k(olddistinct)= m_dot_k(olddistinct)+1;
                 mjk(armchosen,olddistinct)=mjk(armchosen,olddistinct)+1;
                 m_dd=m_dd+1;
+                TP = 1;
             end
             nj_dot_k(armchosen,olddistinct)=nj_dot_k(armchosen,olddistinct)+1;
         end
@@ -268,8 +284,11 @@ for III=1:Runs
         
 
         %  particle filter
+        %[ alpha, d ,gamma ,nu , M_parametri]=Filter_iperparametri(...
+        %    mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri,...);
         [ alpha, d ,gamma ,nu , M_parametri]=Filter_iperparametri(...
-            mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri);
+            mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri,...
+            armchosen,olddistinct,TP);
         
         % update Oracle
         

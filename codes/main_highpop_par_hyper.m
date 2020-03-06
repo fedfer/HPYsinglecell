@@ -384,7 +384,7 @@ parfor III=1:Runs
             mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri);
         
         
-        % UPDATE HPY HYPER _hyper
+        % UPDATE HPY _hyper
         newobsindHPY_hyper(i) = 0;
         for jj=1:n_inc_hyper
         if sum(KuniHPY_hyper==newobsHPY_hyper(jj))==0
