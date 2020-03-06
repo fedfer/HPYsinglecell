@@ -12,21 +12,21 @@ addpath('/work/sta790/ff31/HPYsinglecell/codes/hyper')
 %add the Good-Tulming estimator of Bianca
 
 % numero di iterazioni su cui fare average
-% Runs=48;
-Runs=5;
+Runs=48;
+% Runs=5;
 
 % numero delle popolazioni
-% J = 100;
-J = 10;
+%J = 10;
+J = 100;
 
 % Setting paper 
 % numero totale delle specie tra tutte le popolazioni
-N=2000;
+N=20000;
 % parametri per la Zipf
 Zipfpar=[1.3; 1.3; 1.3; 1.3; repelem(2,J - 4).'];
 % numero delle specie presenti nelle J popolazioni
 % NN=250*ones(J,1);
-NN=25*ones(J,1);
+NN=2500*ones(J,1);
 
 
 % Reviewer Answer 6 
@@ -35,15 +35,15 @@ NN=25*ones(J,1);
 
 % numero di iterazioni in MCMC per il numero di tavoli e dei parametri di
 % HPY dato il campione iniziale
-% iter = 35000;
-% burnin = 15000;
-iter=350;
-burnin=150;
+iter = 35000;
+burnin = 15000;
+% iter=350;
+% burnin=150;
 
 % Numero di iterazioni per il particle filter: il numero delle iterazioni
 % deve essere inferiore a iter-burnin
-% N_iter=1000;
-N_iter=100;
+N_iter=1000;
+% N_iter=100;
 
 % normalizing parameter of GT strategy, in order to give some prob to be selected to 
 % populations that have u_Gt = 0
@@ -53,8 +53,8 @@ alpha_GT = 0.1;
 n_init=20*ones(J,1);
 n_init_hyper=20*ones(J,1);
 % lunghezza del campione addizionale
-% addsample=50;
-addsample=5;
+addsample=50;
+% addsample=5;
 % units sampled each additional trial
 n_inc = 50;
 n_inc_hyper = 50;
@@ -346,6 +346,12 @@ parfor III=1:Runs
         end
         
         % UPDATE HPY
+        
+        % save old parameters for new filtering algorithm
+        mjk_old = mjk;m_j_dot_old = m_j_dot;m_dd_old = m_dd; 
+        m_dot_k_old = m_dot_k,nj_dot_k_old = nj_dot_k; nn_old = nn;
+        bigK_old = bigK;
+        
         newobsindHPY(i) = 0;
         for jj=1:n_inc
         if sum(KuniHPY==newobsHPY(jj))==0
@@ -380,11 +386,20 @@ parfor III=1:Runs
         
         nn(armchosen)=nn(armchosen)+1;
         end
-        [alpha(III,:), d(III,:) ,gamma(III,1) ,nu(III,1), M_parametri]=Filter_iperparametri(...
-            mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri);
-        
+        %[alpha(III,:), d(III,:) ,gamma(III,1) ,nu(III,1), M_parametri]=Filter_iperparametri(...
+        %    mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri);
+        [alpha(III,:), d(III,:) ,gamma(III,1) ,nu(III,1) , M_parametri]=Filter_iperparametri_v1(...
+            mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri,...
+            mjk_old, m_j_dot_old,m_dd_old,m_dot_k_old,nj_dot_k_old,nn_old,...
+            bigK_old);
         
         % UPDATE HPY _hyper
+        
+        mjk_old_hyper = mjk_hyper;m_j_dot_old_hyper = m_j_dot_hyper;
+        m_dd_old_hyper = m_dd_hyper; m_dot_k_old_hyper = m_dot_k_hyper; 
+        nj_dot_k_old_hyper = nj_dot_k_hyper; nn_old_hyper = nn_hyper;
+        bigK_old_hyper = bigK_hyper;
+        
         newobsindHPY_hyper(i) = 0;
         for jj=1:n_inc_hyper
         if sum(KuniHPY_hyper==newobsHPY_hyper(jj))==0
@@ -423,7 +438,8 @@ parfor III=1:Runs
         [alpha_hyper(III,:), d_hyper(III,:) ,gamma_hyper(III,1) ,nu_hyper(III,1), ...
             theta_h(III,1),a0(III,1),b0(III,1), M_parametri_hyper]=Filter_iperparametri_hyper(...
             mjk_hyper,m_j_dot_hyper,m_dd_hyper,m_dot_k_hyper,nj_dot_k_hyper,J,nn_hyper,...
-            bigK_hyper,N_iter,M_parametri_hyper);
+            bigK_hyper,N_iter,M_parametri_hyper,mjk_old_hyper, m_j_dot_old_hyper,...
+            m_dd_old_hyper,m_dot_k_old_hyper,nj_dot_k_old_hyper,nn_old_hyper,bigK_old_hyper);
         
         
         % Update Oracle
