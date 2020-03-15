@@ -41,7 +41,6 @@ burnin=15000;
 
 % Numero di iterazioni per il particle filter: il numero delle iterazioni
 % deve essere inferiore a iter-burnin
-% N_iter=1000;
 N_iter=1000;
 
 % normalizing parameter of GT strategy, in order to give some prob to be selected to 
