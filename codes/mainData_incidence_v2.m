@@ -1,10 +1,11 @@
 clear all;
 close all;
 
+addpath('/Users/felpo/MATLAB/projects/untitled/codes');
+addpath('/Users/felpo/MATLAB/projects/untitled/data');
 
 % total number of iterations 
 Runs=100;
- 
 fetal=csvread('fetal_dict2.txt');
 adult=csvread('adult_dict2.txt');
 embryo=csvread('embryo_dict2.txt');
@@ -197,6 +198,11 @@ for III=1:Runs
         end
         end
         
+        % save old parameters for new filtering algorithm
+        mjk_old = mjk;m_j_dot_old = m_j_dot;m_dd_old = m_dd; 
+        m_dot_k_old = m_dot_k;nj_dot_k_old = nj_dot_k; nn_old = nn;
+        bigK_old = bigK;
+        
         % Update HPY
         newobsindHPY(i) = 0;
         for jj=1:n_inc
@@ -230,8 +236,12 @@ for III=1:Runs
         
         nn(armchosen)=nn(armchosen)+1;
         end
-        [alpha, d ,gamma ,nu , M_parametri]=Filter_iperparametri(...
-            mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri);
+        %[alpha, d ,gamma ,nu , M_parametri]=Filter_iperparametri(...
+        %    mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri);
+        [alpha(III,:), d(III,:) ,gamma(III,1) ,nu(III,1) , M_parametri]=Filter_iperparametri_v1(...
+            mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri,...
+            mjk_old, m_j_dot_old,m_dd_old,m_dot_k_old,nj_dot_k_old,nn_old,...
+            bigK_old);
         
     
         
