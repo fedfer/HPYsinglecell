@@ -156,7 +156,7 @@ M_parametri_ini=M_parametri(end-N_iter+1:end,:);
 
 %% Algoritmi vari per scegliere da dove campionare la prossima
 % osservazione: Unif, HPY Oracle GT
-disp('start parfor loop')
+disp('finish first estimation parfor loop')
 
 parfor III=1:Runs
 %for III=1:Runs

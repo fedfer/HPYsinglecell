@@ -73,11 +73,15 @@ M0=1;
 V0=4;
 bigK=length(Kini);
 
+[M_Tavoli, M_l_star, M_parametri, Dati_star, k_popolazioni]=posterior_K(data,M0,V0,J,n_init,iter,burnin);
 
-[M_Tavoli M_l_star M_parametri Dati_star k_popolazioni]=posterior_K(data,M0,V0,J,n_init,iter,burnin);
 
+[mjk_ini, m_dot_k_ini, m_j_dot_ini, m_dd_ini, alpha, d, gamma, nu]=stima_parametri(M_l_star,tot_dist,M_parametri,J,iter-burnin);
+gamma = repmat(gamma,Runs,1);
+nu = repmat(nu,Runs,1);
+alpha = repmat(alpha,Runs,1);
+d = repmat(d,Runs,1);
 
-[mjk_ini, m_dot_k_ini, m_j_dot_ini, m_dd_ini alpha d gamma nu]=stima_parametri(M_l_star,tot_dist,M_parametri,J,iter-burnin);
 
 M_parametri_ini=M_parametri(end-N_iter+1:end,:);
 
@@ -145,10 +149,12 @@ for III=1:Runs
         % HPY
         betadraws=zeros(1,J);
         K_j_post = zeros(1,J);
-        betazero=betarnd(gamma+nu*bigK,m_dd-bigK*nu);
+        % betazero=betarnd(gamma+nu*bigK,m_dd-bigK*nu);
+        betazero=betarnd(gamma(III,1)+nu(III,1)*bigK,m_dd-bigK*nu(III,1));
+
         for j=1:J
             betadraws(j)=betarnd(betazero*(alpha(j)+(m_j_dot(j))), ((1-betazero)*(alpha(j)+m_j_dot(j))+ nn(j)- m_j_dot(j)));
-            K_j_post(j) = E_Kjl_simplified(betadraws(j),nu,gamma,bigK,...
+            K_j_post(j) = E_Kjl_simplified(betadraws(j),nu(III,1),gamma(III,1),bigK,...
                 alpha(j),d(j),betazero,m_j_dot(j),n_inc);
         end
   
@@ -222,7 +228,7 @@ for III=1:Runs
   
             olddistinct=find(KuniHPY==newobsHPY(jj));
             probnewold=[nj_dot_k(armchosen,olddistinct)-d(armchosen)*mjk(armchosen,olddistinct),...
-                (alpha(armchosen)+m_j_dot(armchosen)*d(armchosen))*((m_dot_k(olddistinct)-nu)/(gamma+m_dd))];
+                (alpha(armchosen)+m_j_dot(armchosen)*d(armchosen))*((m_dot_k(olddistinct)-nu(III,1))/(gamma(III,1)+m_dd))];
             probnewold=probnewold/sum(probnewold);
             bern=binornd(1,probnewold(1));
             if bern==0
@@ -236,7 +242,7 @@ for III=1:Runs
         
         nn(armchosen)=nn(armchosen)+1;
         end
-        %[alpha, d ,gamma ,nu , M_parametri]=Filter_iperparametri(...
+        %[alpha, d ,gamma ,nu(III,1) , M_parametri]=Filter_iperparametri(...
         %    mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri);
         [alpha(III,:), d(III,:) ,gamma(III,1) ,nu(III,1) , M_parametri]=Filter_iperparametri_v1(...
             mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri,...
