@@ -1,4 +1,6 @@
 load('/work/sta790/ff31/MCMC_estimation.mat')  
+addpath('/work/sta790/ff31/HPYsinglecell/codes')  
+addpath('/work/sta790/ff31/HPYsinglecell/codes/hyper') 
 
 % get job array ID
 III = str2num(getenv('SLURM_ARRAY_TASK_ID'));
