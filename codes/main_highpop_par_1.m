@@ -12,7 +12,7 @@ addpath('/work/sta790/ff31/HPYsinglecell/codes/hyper')
 %add the Good-Tulming estimator of Bianca
 
 % numero di iterazioni su cui fare average
-Runs=48;
+Runs=100;
 % Runs=5;
 
 % numero delle popolazioni
@@ -23,14 +23,14 @@ J=100;
 % numero totale delle specie tra tutte le popolazioni
 N=20000;
 % parametri per la Zipf
-% Zipfpar=[1.3; 1.3; 1.3; 1.3; repelem(2,J - 4).'];
+Zipfpar=[1.3; 1.3; 1.3; 1.3; repelem(2,J - 4).'];
 % numero delle specie presenti nelle J popolazioni
 NN=2500*ones(J,1);
 
 
 % Reviewer Answer 6 
 % parametri per la Zipf
-Zipfpar=[repelem(2,33).'; repelem(2.1,33).'; repelem(1.9,34).'];
+% Zipfpar=[repelem(2,33).'; repelem(2.1,33).'; repelem(1.9,34).'];
 
 % numero di iterazioni in MCMC per il numero di tavoli e dei parametri di
 % HPY dato il campione iniziale
@@ -161,7 +161,7 @@ disp('finish first estimation')
 %to save workspace
 %M_par_save = M_parametri_storage(1,:,:);
 %clear M_parametri_storage; 
-save('MCMC_estimation.mat');
+save('MCMC_estimation_paper.mat');
 
 %save weights and add sample units
 %xlswrite('HPY.xls',transpose(sum(DATAfinal.HPY)/Runs));
