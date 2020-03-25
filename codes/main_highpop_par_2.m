@@ -1,4 +1,4 @@
-load('/work/sta790/ff31/MCMC_estimation.mat')  
+load('/work/sta790/ff31/MCMC_estimation_paper.mat')  
 addpath('/work/sta790/ff31/HPYsinglecell/codes')  
 addpath('/work/sta790/ff31/HPYsinglecell/codes/hyper') 
 
