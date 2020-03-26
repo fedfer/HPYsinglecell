@@ -23,14 +23,14 @@ J=100;
 % numero totale delle specie tra tutte le popolazioni
 N=20000;
 % parametri per la Zipf
-% Zipfpar=[1.3; 1.3; 1.3; 1.3; repelem(2,J - 4).'];
+Zipfpar=[1.3; 1.3; 1.3; 1.3; repelem(2,J - 4).'];
 % numero delle specie presenti nelle J popolazioni
 NN=2500*ones(J,1);
 
 
 % Reviewer Answer 6 
 % parametri per la Zipf
-Zipfpar=[repelem(2,33).'; repelem(2.1,33).'; repelem(1.9,34).'];
+% Zipfpar=[repelem(2,33).'; repelem(2.1,33).'; repelem(1.9,34).'];
 
 % numero di iterazioni in MCMC per il numero di tavoli e dei parametri di
 % HPY dato il campione iniziale

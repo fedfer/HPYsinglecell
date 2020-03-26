@@ -1,6 +1,6 @@
 % read results
 
-Runs=40;
+Runs=69;
 addsample=100;
 
 % Dati finali
@@ -10,6 +10,10 @@ DATAfinal_uniform_big = M;
 DATAfinal_Oracle_big = M;
 DATAfinal_GoodTulming_big = M;
 
+Wfinal_HPY_big = M;
+Wfinal_uniform_big = M;
+Wfinal_Oracle_big = M;
+Wfinal_GoodTulming_big = M;
 
 for III=1:Runs
     
@@ -20,6 +24,13 @@ for III=1:Runs
     DATAfinal_uniform_big(III,:)=DATAfinal_uniform(III,:);
     DATAfinal_Oracle_big(III,:)=DATAfinal_Oracle(III,:);
     DATAfinal_GoodTulming_big(III,:)=DATAfinal_GoodTulming(III,:);
+    
+    Wfinal_HPY_big(III,:) = WEIGTHS_HPY(III,:);
+    Wfinal_uniform_big(III,:) = WEIGTHS_uniform(III,:);
+    Wfinal_Oracle_big(III,:) = WEIGTHS_Oracle(III,:);
+    Wfinal_GoodTulming_big(III,:) = WEIGTHS_GoodTulming(III,:);
+    
+    III
     
 end
 

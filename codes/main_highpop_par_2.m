@@ -4,6 +4,7 @@ addpath('/work/sta790/ff31/HPYsinglecell/codes/hyper')
 
 % get job array ID
 III = str2num(getenv('SLURM_ARRAY_TASK_ID'));
+rng(III*100)
 
     % Uniform sampling
     supp=1:J;
