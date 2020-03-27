@@ -1,6 +1,6 @@
 % read results
 
-Runs=69;
+Runs=40;
 addsample=100;
 
 % Dati finali

@@ -1,8 +1,10 @@
 clear all;
 close all;
 
-addpath('/Users/felpo/MATLAB/projects/untitled/codes');
-addpath('/Users/felpo/MATLAB/projects/untitled/data');
+% addpath('/Users/felpo/MATLAB/projects/untitled/codes');
+% addpath('/Users/felpo/MATLAB/projects/untitled/data');
+addpath('/work/sta790/ff31/HPYsinglecell/codes')  
+addpath('/work/sta790/ff31/HPYsinglecell/data')  
 
 % total number of iterations 
 Runs=100;
@@ -26,11 +28,11 @@ N_iter=1000;
 alpha_GT = 0.1;
 
 % initial sample
-n_init=20*ones(J,1);
+n_init=50*ones(J,1);
 % additional samples
 addsample=20;
 % units sampled each additional trial
-n_inc = 100;
+n_inc = 25;
 
 
 % Storage 
@@ -302,6 +304,7 @@ for III=1:Runs
 end
 
 % plots
+save('incidence.mat')
 
 plot(1:addsample,sum(DATAfinal.HPY)/Runs,'r');
 hold on
