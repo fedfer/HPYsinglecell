@@ -32,7 +32,7 @@ n_init=50*ones(J,1);
 % additional samples
 addsample=20;
 % units sampled each additional trial
-n_inc = 25;
+n_inc = 100;
 
 
 % Storage 
@@ -304,7 +304,7 @@ for III=1:Runs
 end
 
 % plots
-save('incidence.mat')
+save('abundance.mat')
 
 plot(1:addsample,sum(DATAfinal.HPY)/Runs,'r');
 hold on
