@@ -6,6 +6,7 @@ close all;
 addpath('/work/sta790/ff31/HPYsinglecell/codes')  
 addpath('/work/sta790/ff31/HPYsinglecell/data')  
 
+rng(101)
 % total number of iterations 
 Runs=100;
 fetal=csvread('fetal_dict2.txt');
