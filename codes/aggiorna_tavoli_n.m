@@ -27,7 +27,6 @@ for i=1:n_init(j)
     njx=length(T_piatto_x{j});
 
     % the table can be the same as one of which the dish x is eaten, or new
-
     % number of tables in first restaurant
     Lj=length(unique(Tj_i));
     % total number of tables without i-th restaurant
