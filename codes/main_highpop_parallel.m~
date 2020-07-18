@@ -148,7 +148,7 @@ rng(III*100)
             mjk(armchosen,bigK)=1;
         else
             
-            % probability of old table with old observation
+            % [robability of old table with old observation
             olddistinct=find(KuniHPY==newobsHPY(jj));
             probnewold=[nj_dot_k(armchosen,olddistinct)-d_temp(armchosen)*mjk(armchosen,olddistinct),...
                 (alpha_temp(armchosen)+m_j_dot(armchosen)*d_temp(armchosen))*((m_dot_k(olddistinct)-nu(III,1))/(gamma(III,1)+m_dd))];
@@ -165,22 +165,23 @@ rng(III*100)
         end
         
         nn(armchosen)=nn(armchosen)+1;
+        % aggiorno gli iperparamegtri del HPY utilizzando un MH
         end
         
-        % update HPY hyperparameters with MH
+        
         [alpha(III,:), d(III,:) ,gamma(III,1) ,nu(III,1) , M_parametri]=Filter_hyperparameters_v1(...
             mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri,...
             mjk_old, m_j_dot_old,m_dd_old,m_dot_k_old,nj_dot_k_old,nn_old,...
             bigK_old);
         
         
-        % Update Oracle
+        % Aggiorno i parametri di Oracle
         newobsindOra(i) = 0;
         for jj=1:n_inc
         if sum(KuniOracle==newobsOrac(jj))==0
             KuniOracle=[KuniOracle newobsOrac(jj)];
             newobsindOra(i)=newobsindOra(i)+1;
-            % update la missin mass
+            % aggiorno la missin mass
             for j=1:J
                 newlabel=find(pop{j}==newobsOrac(jj));
                 if isnan(newlabel)==0
@@ -190,7 +191,7 @@ rng(III*100)
         end
         end
         
-        % Update GT
+        % aggiorno i parametri di GT
         newobsindGT(i)=0;
         for jj=1:n_inc
         if sum(KuniGT==newobsGT(jj))==0
@@ -202,7 +203,7 @@ rng(III*100)
         
     end
     
-    % results MCMC
+    % risultati MCMC
     
     distcumHPY=cumsum(newobsindHPY);
     distcumUni=cumsum(newobsindUni);
@@ -223,6 +224,7 @@ rng(III*100)
     
     
     % Storage just for one iteration of algorithm 
+    % M_parametri_storage(III,:,i) = M_parametri;
     save_file = strcat('results_',string(III),'.mat');
     save(save_file);
 

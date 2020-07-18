@@ -1,7 +1,7 @@
 % estimate the parameters using the tables from MCMC
 
 
-function [mjk, m_dot_k, m_j_dot, m_dd alpha d gamma eta]=stima_parametri(M_l_star,tot_dist,M_parametri,J,N)
+function [mjk, m_dot_k, m_j_dot, m_dd alpha d gamma eta]=estimate_parameters(M_l_star,tot_dist,M_parameters,J,N)
 
 % mjk
 mjk=zeros(J,tot_dist);
@@ -28,11 +28,11 @@ end
 m_dd=sum(m_j_dot);
 
 
-stima_iper=sum(M_parametri)/N;
-alpha=stima_iper(1:J);
-d=stima_iper((J+1):(2*J));
-gamma=stima_iper(2*J+1);
-eta=stima_iper(2*J+2);
+estimate_hyper=sum(M_parameters)/N;
+alpha=estimate_hyper(1:J);
+d=estimate_hyper((J+1):(2*J));
+gamma=estimate_hyper(2*J+1);
+eta=estimate_hyper(2*J+2);
 
 
 

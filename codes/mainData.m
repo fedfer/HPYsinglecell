@@ -1,14 +1,13 @@
 clear all;
 close all;
 
-% addpath('/Users/felpo/MATLAB/projects/untitled/codes');
-% addpath('/Users/felpo/MATLAB/projects/untitled/data');
 addpath('/work/sta790/ff31/HPYsinglecell/codes')  
 addpath('/work/sta790/ff31/HPYsinglecell/data')  
 
-rng(101)
 % total number of iterations 
 Runs=100;
+
+% Load data
 fetal=csvread('fetal_dict2.txt');
 adult=csvread('adult_dict2.txt');
 embryo=csvread('embryo_dict2.txt');
@@ -65,11 +64,10 @@ for j=1:J
 end
 dati_totali=cell2mat(data);
 
-% distinct species accross population
 
-Kini=unique(dati_totali);
-% total distincts
-tot_dist=length(Kini);
+Kini=unique(dati_totali); % distinct species accross population
+tot_dist=length(Kini); % total distincts
+
 %% Algorithm to choose from which sample the next oservation for the competitors
 %  Unif, HPY Oracle GT
 M0=1;
@@ -79,7 +77,7 @@ bigK=length(Kini);
 [M_Tavoli, M_l_star, M_parametri, Dati_star, k_popolazioni]=posterior_K(data,M0,V0,J,n_init,iter,burnin);
 
 
-[mjk_ini, m_dot_k_ini, m_j_dot_ini, m_dd_ini, alpha, d, gamma, nu]=stima_parametri(M_l_star,tot_dist,M_parametri,J,iter-burnin);
+[mjk_ini, m_dot_k_ini, m_j_dot_ini, m_dd_ini, alpha, d, gamma, nu]=estimate_parameters(M_l_star,tot_dist,M_parametri,J,iter-burnin);
 gamma = repmat(gamma,Runs,1);
 nu = repmat(nu,Runs,1);
 alpha = repmat(alpha,Runs,1);
@@ -152,7 +150,6 @@ for III=1:Runs
         % HPY
         betadraws=zeros(1,J);
         K_j_post = zeros(1,J);
-        % betazero=betarnd(gamma+nu*bigK,m_dd-bigK*nu);
         betazero=betarnd(gamma(III,1)+nu(III,1)*bigK,m_dd-bigK*nu(III,1));
 
         for j=1:J
@@ -174,8 +171,7 @@ for III=1:Runs
         end
         w_Ora(armchosenOrac)=w_Ora(armchosenOrac)+1;
         
-        %  GT
-
+        % GT
         u_GT=zeros(1,J);
         for j=1:J
             t = size(data{j},2)/n_inc;
@@ -227,7 +223,6 @@ for III=1:Runs
             nj_dot_k(armchosen,bigK)=1;
             mjk(armchosen,bigK)=1;
         else
-            
   
             olddistinct=find(KuniHPY==newobsHPY(jj));
             probnewold=[nj_dot_k(armchosen,olddistinct)-d(armchosen)*mjk(armchosen,olddistinct),...
@@ -245,8 +240,7 @@ for III=1:Runs
         
         nn(armchosen)=nn(armchosen)+1;
         end
-        %[alpha, d ,gamma ,nu(III,1) , M_parametri]=Filter_iperparametri(...
-        %    mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri);
+        
         [alpha(III,:), d(III,:) ,gamma(III,1) ,nu(III,1) , M_parametri]=Filter_iperparametri_v1(...
             mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri,...
             mjk_old, m_j_dot_old,m_dd_old,m_dot_k_old,nj_dot_k_old,nn_old,...
@@ -270,7 +264,7 @@ for III=1:Runs
         end
         end
         
-        % Updae GT
+        % update GT
         newobsindGT(i)=0;
         for jj=1:n_inc
         if sum(KuniGT==newobsGT(jj))==0
@@ -283,7 +277,6 @@ for III=1:Runs
     end
     
     % results MCMC
-    
     distcumHPY=cumsum(newobsindHPY);
     distcumUni=cumsum(newobsindUni);
     distcumOra=cumsum(newobsindOra);
@@ -304,76 +297,4 @@ for III=1:Runs
     
 end
 
-% plots
-save('incidence.mat')
 
-plot(1:addsample,sum(DATAfinal.HPY)/Runs,'r');
-hold on
-plot(1:addsample,sum(DATAfinal.uniform)/Runs,'g');
-plot(1:addsample,sum(DATAfinal.Oracle)/Runs,'b');
-plot(1:addsample,sum(DATAfinal.GoodTulming)/Runs,'k');
-
-legend('HPY','Uniform','Oracle','Good-Tulming','Location','NorthWest');
-
-
-%to save workspace
-%save('10-07-2018.mat')
-
-
-% plot with bands using quantiles
-plot(1:addsample,sum(DATAfinal.HPY)/Runs,'r');
-hold on
-plot(1:addsample,sum(DATAfinal.uniform)/Runs,'g');
-plot(1:addsample,sum(DATAfinal.Oracle)/Runs,'b');
-plot(1:addsample,sum(DATAfinal.GoodTulming)/Runs,'k');
-plot(1:addsample,quantile(DATAfinal.HPY,0.025),':r');
-plot(1:addsample,quantile(DATAfinal.HPY,0.975),':r');
-plot(1:addsample,quantile(DATAfinal.uniform,0.025),':g');
-plot(1:addsample,quantile(DATAfinal.uniform,0.975),':g');
-plot(1:addsample,quantile(DATAfinal.Oracle,0.025),':b');
-plot(1:addsample,quantile(DATAfinal.Oracle,0.975),':b');
-plot(1:addsample,quantile(DATAfinal.GoodTulming,0.025),':k');
-plot(1:addsample,quantile(DATAfinal.GoodTulming,0.975),':k');
-legend('HPY','Uniform','Oracle','GT','Location','NorthWest');
-
-%plot with bands using sd
-sd.HPY = std(DATAfinal.HPY);
-sd.uniform = std(DATAfinal.uniform);
-sd.GT = std(DATAfinal.GoodTulming);
-sd.Oracle = std(DATAfinal.Oracle);
-plot(1:addsample,sum(DATAfinal.HPY)/Runs,'r');
-hold on
-plot(1:addsample,sum(DATAfinal.uniform)/Runs,'g');
-plot(1:addsample,sum(DATAfinal.Oracle)/Runs,'b');
-plot(1:addsample,sum(DATAfinal.GoodTulming)/Runs,'k');
-plot(1:addsample,sum(DATAfinal.HPY)/Runs+sd.HPY,':r');
-plot(1:addsample,sum(DATAfinal.HPY)/Runs-sd.HPY,':r');
-plot(1:addsample,sum(DATAfinal.uniform)/Runs+sd.uniform,':g');
-plot(1:addsample,sum(DATAfinal.uniform)/Runs-sd.uniform,':g');
-plot(1:addsample,sum(DATAfinal.GoodTulming)/Runs+sd.GT,':k');
-plot(1:addsample,sum(DATAfinal.GoodTulming)/Runs-sd.GT,':k');
-plot(1:addsample,sum(DATAfinal.Oracle)/Runs+sd.HPY,':b');
-plot(1:addsample,sum(DATAfinal.Oracle)/Runs-sd.HPY,':b');
-legend('HPY','Uniform','Oracle','GT','Location','NorthWest');
-
-
-%plot with sd
-shadedErrorBar(1:addsample,DATAfinal.HPY, {@mean,@std}, 'lineprops', 'r','transparent',true,'patchSaturation',0.075);
-hold on
-shadedErrorBar(1:addsample,DATAfinal.Oracle, {@mean,@std}, 'lineprops', 'b','transparent',true,'patchSaturation',0.075);
-shadedErrorBar(1:addsample,DATAfinal.uniform, {@mean,@std}, 'lineprops', 'g','transparent',true,'patchSaturation',0.075);
-shadedErrorBar(1:addsample,DATAfinal.GoodTulming, {@mean,@std}, 'lineprops', 'k','transparent',true,'patchSaturation',0.075);
-legend('HPY','Uniform','Oracle','GT','Location','NorthWest');
-
-M=zeros(1,addsample);
-Final=struct('uniform',M,'Oracle',M,'GoodTulming',M,'GoodTuring2',M,'GoodTuring3',M);
-Final.uniform=sum(DATAfinal.uniform)/Runs;
-Final.HPY=sum(DATAfinal.HPY)/Runs;
-Final.GoodTuring=sum(DATAfinal.GoodTuring)/Runs;
-Final.Oracle=sum(DATAfinal.Oracle)/Runs;
-%save weights and add sample units
-%xlswrite('Aug16-missing mass HPY.xls',transpose(Final.HPY));
-%xlswrite('Aug16-missing mass GT Weights.xls',WEIGTHS.weight_GoodTuring);
-
-%per caricare dei vecchi valori
-% unif= csvread('unif.csv');

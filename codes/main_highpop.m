@@ -4,62 +4,58 @@ close all;
 % add path for Computing
 addpath('/work/sta790/ff31/HPYsinglecell/codes')  
 
-%add the Good-Tulming estimator of Bianca
-
-% numero di iterazioni su cui fare average
+% number of iterations
 Runs=50;
  
-% numero totale delle specie tra tutte le popolazioni
+% total number of species
 N=3000;
 
-% numero delle popolazioni
+% total number of populations
 J=40;
 
-% numero delle specie presenti nelle J popolazioni
+% number of species in each pop
 NN=2500*ones(J,1);
 
-% parametri per la Zipf
+% parameters of la Zipf
 Zipfpar=[1.3; 1.3; 1.3; 1.3; repelem(2,J - 4).'];
 
-% ampiezza del campione iniziale
+% initial sample
 n_init=30*ones(J,1);
-% lunghezza del campione addizionale
+% additional samples
 addsample=300;
 
-% numero di iterazioni in MCMC per il numero di tavoli e dei parametri di
-% HPY dato il campione iniziale
+% number of MCMC iterations
 iter=35000;
 burnin=15000;
 
-% Numero di iterazioni per il particle filter: il numero delle iterazioni
-% deve essere inferiore a iter-burnin
+% number of iterations for particle filter
+% smaller than iter-burnin
 N_iter=1000;
 
 % normalizing parameter of GT strategy, in order to give some prob to be selected to 
 % populations that have u_Gt = 0
 alpha_GT = 0.1;
 
-% ampiezza del campione iniziale
+% initial sample
 n_init=20*ones(J,1);
-% lunghezza del campione addizionale
+% extra samples at each step
 addsample=20;
 % units sampled each additional trial
 n_inc = 100;
 
 
-% Dati finali
+% Final storage
 M=zeros(Runs,addsample);
 DATAfinal=struct('HPY',M,'uniform',M,'Oracle',M,'GoodTulming',M);
 
-%weights
+% Weights
 M=zeros(Runs,J);
 WEIGTHS=struct('weight_HPY',M,'weight_uniform',M,'weight_Oracle',M,'weight_GoodTulming',M);
 clear M;
 
-% simulare la legge vera in ogni popolazione
+% sample the species in each population 
 labels=1:N;
 
-%frequenze nella popolazione
 freq=cell(1,length(NN));
 for i=1:J
     freq{i}=zeros(1,NN(i));
@@ -73,7 +69,7 @@ for i=1:J
     end
 end
 
-% labels delle specie nelle varie popolazioni
+% labels in each population 
 pop=cell(1,J);
 for i=1:J
     labels_corr=labels;
@@ -84,8 +80,8 @@ for i=1:J
     end
 end
 
-%genera i dati iniziali per le varie popolazioni
-% data{j}= vettore che contiene il campione della popolazione j
+% sample data for each population 
+% data{j} = vector that contains the values for population j
 data=cell(1,J);
 for i=1:J
     data{i}=zeros(1,n_init(i));
@@ -97,38 +93,28 @@ for j=1:J
 end
 
 dati_totali=cell2mat(data);
-% specie dsitinte di tutta la popolazione iniziale
-Kini=unique(dati_totali);
-%numero di specie iniziali distinte
-tot_dist=length(Kini);
-%% Inferenza MCMC sul numero di specie e sul numero di parametri
-% questi parametri sono quelli riferiti alle prior degli hyperparametri
-% del PY
+Kini=unique(dati_totali); % distinct species accross population
+tot_dist=length(Kini); % total distincts
+
+% Inference on HPY hyperparameters
 M0=1;
 V0=4;
 bigK=length(Kini);
 
-% aggiornamento con l'algoritmo marginale che ho sviluppato con Antonio
-% ed Igor
+% update with marginal algorithm 
 [M_Tavoli M_l_star M_parametri Dati_star k_popolazioni]=posterior_K(data,M0,V0,J,n_init,iter,burnin);
-%save ristorante_cinese  M_Tavoli M_l_star M_parametri Dati_star k_popolazioni Kini tot_dist dati_totali data pop DATAfinal WEIGTHS
 
-% % Aggiornamento con l'algoritmo di Marco: cambia come si aggiornano gli
-% % iperparametri
-% [M_Tavoli, M_l_star, M_parametri, Dati_star, k_popolazioni]=ristorante_cinese(data,M0,V0,J,n_init,iter,burnin);
+% estimates the parameters that we need for bandits
+[mjk_ini, m_dot_k_ini, m_j_dot_ini, m_dd_ini alpha d gamma nu]=estimate_parameters(M_l_star,tot_dist,M_parametri,J,iter-burnin);
 
-% ora stimo i parametri che mi servono dopo
-[mjk_ini, m_dot_k_ini, m_j_dot_ini, m_dd_ini alpha d gamma nu]=stima_parametri(M_l_star,tot_dist,M_parametri,J,iter-burnin);
-
-% creo un vettore di pesi per la mistura delle normali dei parametri: ne
-% prendo solo una parte.
 M_parametri_ini=M_parametri(end-N_iter+1:end,:);
 
 
-%% Algoritmi vari per scegliere da dove campionare la prossima
-% osservazione: Unif, HPY Oracle GT
+%% Algorithm to choose from which sample the next oservation for the competitors
+%  Unif, HPY Oracle GT
 
 for III=1:Runs
+    
     % Uniform sampling
     supp=1:J;
     masses=ones(1,J)/J;
@@ -144,7 +130,7 @@ for III=1:Runs
     m_dd=m_dd_ini;
     M_parametri=M_parametri_ini;
     
-    % calcolo n.k
+    % compute n.k
     nj_dot_k=zeros(J,tot_dist);
     for j=1:J
         for w=1:tot_dist
@@ -158,8 +144,6 @@ for III=1:Runs
     missingmass=zeros(1,J);
     for j=1:J
         labelsseen=ismember(pop{j},KuniOracle);
-        % ritorna un vettore di 1 e 0: ho 1 se pop{j} ? elemento di
-        % KuniOracle
         missingmass(j) = 1-sum(freq{j}(labelsseen));
     end
     
@@ -167,34 +151,29 @@ for III=1:Runs
     GT_data=data;
     KuniGT=Kini;
     
-    % indicatori delle scoperte di nuove specie
+    % vector for new species
     newobsindHPY=zeros(1,addsample);
     newobsindOra=zeros(1,addsample);
     newobsindUni=zeros(1,addsample);
     newobsindGT=zeros(1,addsample);
     
-    % indicatori per i pesi
+    % vector for weights
     w_HPY=zeros(1,J);
     w_Ora=zeros(1,J);
     w_Uni=zeros(1,J);
     w_GT=zeros(1,J);
     
-    % spezio per contenere i risultati relativi alla stima degli
-    % iperparametri
-    
-    
-    %% Inizio degli algoritmi
     
     
     
     for i=1:addsample
         
-        % scegliamo la popolazione per la stratqegia Uni
+        % Uniform
         unif=gendiscr(supp,masses);
         w_Uni(unif)=w_Uni(unif)+1;
         
         
-        % scegliamo la popolazone per la strategia HPY
+        % HPY
         betadraws=zeros(1,J);
         K_j_post = zeros(1,J);
         betazero=betarnd(gamma+nu*bigK,m_dd-bigK*nu);
@@ -209,7 +188,7 @@ for III=1:Runs
         clear v_max;
         w_HPY(armchosen)=w_HPY(armchosen)+1;
         
-        % scegliamo la popolazione per la strategia Oracle
+        % Oracle
         [v_max armchosenOrac]=max(missingmass);
         clear v_max;
         if length(armchosenOrac)>1
@@ -218,8 +197,8 @@ for III=1:Runs
         end
         w_Ora(armchosenOrac)=w_Ora(armchosenOrac)+1;
         
-        % scegliamo la popolazione per la strategia GT
-
+        
+        % GT
         u_GT=zeros(1,J);
         for j=1:J
             t = size(data{j},2)/n_inc;
@@ -230,7 +209,7 @@ for III=1:Runs
         armchosenGT = gendiscr(1:J,u_GT);
         w_GT(armchosenGT)=w_GT(armchosenGT)+1;
         
-        % campioniamo un nuovo valore per ogni popolazione scelta
+        % Sample a unit for each population
         newobservations=zeros(n_inc,J);
         for j=1:J
             for jj=1:n_inc
@@ -242,7 +221,7 @@ for III=1:Runs
         newobsOrac=newobservations(:,armchosenOrac);
         newobsGT=newobservations(:,armchosenGT);
         
-        % aggiornamento dell'uniforme
+        % update Uniform 
         newobsindUni(i) = 0;
         for jj=1:n_inc
         if sum(KuniUni==newunif(jj))==0
@@ -266,15 +245,14 @@ for III=1:Runs
             mjk(armchosen,bigK)=1;
         else
             
-            % calcolo la probabilit? di sedersi a un tavolo vecchio se
-            % l'osservazione ? vecchia
             olddistinct=find(KuniHPY==newobsHPY(jj));
             probnewold=[nj_dot_k(armchosen,olddistinct)-d(armchosen)*mjk(armchosen,olddistinct),...
                 (alpha(armchosen)+m_j_dot(armchosen)*d(armchosen))*((m_dot_k(olddistinct)-nu)/(gamma+m_dd))];
             probnewold=probnewold/sum(probnewold);
             bern=binornd(1,probnewold(1));
+            
             if bern==0
-                % l'osservazione forma un nuovo tavolo
+
                 m_j_dot(armchosen)=m_j_dot(armchosen)+1;
                 m_dot_k(olddistinct)= m_dot_k(olddistinct)+1;
                 mjk(armchosen,olddistinct)=mjk(armchosen,olddistinct)+1;
@@ -284,20 +262,21 @@ for III=1:Runs
         end
         
         nn(armchosen)=nn(armchosen)+1;
-        % aggiorno gli iperparamegtri del HPY utilizzando un MH
         end
+        
+        % Particle filter for hyperparameters
         [alpha, d ,gamma ,nu , M_parametri]=Filter_hyperparameters(...
             mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri);
         
     
         
-        % Aggiorno i parametri di Oracle
+        % update Oracle
         newobsindOra(i) = 0;
         for jj=1:n_inc
         if sum(KuniOracle==newobsOrac(jj))==0
             KuniOracle=[KuniOracle newobsOrac(jj)];
             newobsindOra(i)=newobsindOra(i)+1;
-            % aggiorno la missin mass
+            % missin mass
             for j=1:J
                 newlabel=find(pop{j}==newobsOrac(jj));
                 if isnan(newlabel)==0
@@ -307,7 +286,7 @@ for III=1:Runs
         end
         end
         
-        % aggiorno i parametri di GT
+        % update GT
         newobsindGT(i)=0;
         for jj=1:n_inc
         if sum(KuniGT==newobsGT(jj))==0
@@ -319,8 +298,7 @@ for III=1:Runs
         
     end
     
-    % risultati MCMC
-    
+    % results MCMC
     distcumHPY=cumsum(newobsindHPY);
     distcumUni=cumsum(newobsindUni);
     distcumOra=cumsum(newobsindOra);
@@ -340,15 +318,3 @@ for III=1:Runs
     
     
 end
-
-%to save workspace
-save('J40.mat')
-
-%save weights and add sample units
-%xlswrite('HPY.xls',transpose(sum(DATAfinal.HPY)/Runs));
-%xlswrite('unif.xls',transpose(sum(DATAfinal.uniform)/Runs));
-%xlswrite('GT.xls',transpose(sum(DATAfinal.GoodTulming)/Runs));
-%xlswrite('Oracle.xls',transpose(sum(DATAfinal.Oracle)/Runs));
-
-%per caricare dei vecchi valori
-% unif= csvread('unif.csv');

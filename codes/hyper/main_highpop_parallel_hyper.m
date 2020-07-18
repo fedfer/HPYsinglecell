@@ -159,7 +159,7 @@ a0 = repmat(a0,Runs,1);
 b0 = repmat(b0,Runs,1);
 
 % HPT-TS without hyperprior
-[mjk_ini, m_dot_k_ini, m_j_dot_ini, m_dd_ini,alpha,d,gamma,nu]=stima_parametri(M_l_star,tot_dist,M_parametri,J,iter-burnin);
+[mjk_ini, m_dot_k_ini, m_j_dot_ini, m_dd_ini,alpha,d,gamma,nu]=estimate_parameters(M_l_star,tot_dist,M_parametri,J,iter-burnin);
 gamma = repmat(gamma,Runs,1);
 nu = repmat(nu,Runs,1);
 alpha = repmat(alpha,Runs,1);

@@ -1,12 +1,120 @@
-% LOAD THE the estimates of MCMC and addpath
-load('/work/sta790/ff31/MCMC_estimation_paper.mat')  
+clear all;
+close all;
+
+% add path for Computing
 addpath('/work/sta790/ff31/HPYsinglecell/codes')  
-addpath('/work/sta790/ff31/HPYsinglecell/codes/hyper') 
 
-% get job array ID
-III = str2num(getenv('SLURM_ARRAY_TASK_ID'));
-rng(III*100)
+% number of iterations
+Runs=50;
+ 
+% total number of species
+N=3000;
 
+% total number of populations
+J=40;
+
+% number of species in each pop
+NN=2500*ones(J,1);
+
+% parameters of la Zipf
+Zipfpar=[1.3; 1.3; 1.3; 1.3; repelem(2,J - 4).'];
+
+% initial sample
+n_init=30*ones(J,1);
+% additional samples
+addsample=300;
+
+% number of MCMC iterations
+iter=35000;
+burnin=15000;
+
+% number of iterations for particle filter
+% smaller than iter-burnin
+N_iter=1000;
+
+% normalizing parameter of GT strategy, in order to give some prob to be selected to 
+% populations that have u_Gt = 0
+alpha_GT = 0.1;
+
+% initial sample
+n_init=20*ones(J,1);
+% extra samples at each step
+addsample=20;
+% units sampled each additional trial
+n_inc = 100;
+
+
+% Final storage
+M=zeros(Runs,addsample);
+DATAfinal=struct('HPY',M,'uniform',M,'Oracle',M,'GoodTulming',M);
+
+% Weights
+M=zeros(Runs,J);
+WEIGTHS=struct('weight_HPY',M,'weight_uniform',M,'weight_Oracle',M,'weight_GoodTulming',M);
+clear M;
+
+% sample the species in each population 
+labels=1:N;
+
+freq=cell(1,length(NN));
+for i=1:J
+    freq{i}=zeros(1,NN(i));
+end
+
+for i=1:J
+    freq1=1:NN(i);
+    freq2=sum(freq1.^(-Zipfpar(i)));
+    for j=1:NN(i)
+        freq{i}(j)=((1/j)^Zipfpar(i))/freq2;
+    end
+end
+
+% labels in each population 
+pop=cell(1,J);
+for i=1:J
+    labels_corr=labels;
+    for h=1:NN(i)
+        pop{i}(h)=gendiscr(labels_corr,ones(1,length(labels_corr))/length(labels_corr));
+        ind=find(pop{i}(h)==labels_corr);
+        labels_corr(ind)=[];
+    end
+end
+
+% sample data for each population 
+% data{j} = vector that contains the values for population j
+data=cell(1,J);
+for i=1:J
+    data{i}=zeros(1,n_init(i));
+end
+for j=1:J
+    for i=1:n_init(j)
+        data{j}(i)=gendiscr(pop{j},freq{j});
+    end
+end
+
+dati_totali=cell2mat(data);
+Kini=unique(dati_totali); % distinct species accross population
+tot_dist=length(Kini); % total distincts
+
+% Inference on HPY hyperparameters
+M0=1;
+V0=4;
+bigK=length(Kini);
+
+% update with marginal algorithm 
+[M_Tavoli M_l_star M_parametri Dati_star k_popolazioni]=posterior_K(data,M0,V0,J,n_init,iter,burnin);
+
+% estimates the parameters that we need for bandits
+[mjk_ini, m_dot_k_ini, m_j_dot_ini, m_dd_ini alpha d gamma nu]=estimate_parameters(M_l_star,tot_dist,M_parametri,J,iter-burnin);
+
+M_parametri_ini=M_parametri(end-N_iter+1:end,:);
+
+
+%% Algorithm to choose from which sample the next oservation for the competitors
+%  Unif, HPY Oracle GT
+
+for III=1:Runs
+    
     % Uniform sampling
     supp=1:J;
     masses=ones(1,J)/J;
@@ -22,7 +130,7 @@ rng(III*100)
     m_dd=m_dd_ini;
     M_parametri=M_parametri_ini;
     
-    % calcolo n.k
+    % compute n.k
     nj_dot_k=zeros(J,tot_dist);
     for j=1:J
         for w=1:tot_dist
@@ -43,13 +151,13 @@ rng(III*100)
     GT_data=data;
     KuniGT=Kini;
     
-    % vector to indicate whether i discover new species 
+    % vector for new species
     newobsindHPY=zeros(1,addsample);
     newobsindOra=zeros(1,addsample);
     newobsindUni=zeros(1,addsample);
     newobsindGT=zeros(1,addsample);
     
-    % weights
+    % vector for weights
     w_HPY=zeros(1,J);
     w_Ora=zeros(1,J);
     w_Uni=zeros(1,J);
@@ -57,14 +165,8 @@ rng(III*100)
     
     
     
-    %% Start Algorithms
-    
-    
     
     for i=1:addsample
-        
-        alpha_temp = alpha(III,:);
-        d_temp = d(III,:);
         
         % Uniform
         unif=gendiscr(supp,masses);
@@ -74,19 +176,21 @@ rng(III*100)
         % HPY
         betadraws=zeros(1,J);
         K_j_post = zeros(1,J);
-        betazero=betarnd(gamma(III,1)+nu(III,1)*bigK,m_dd-bigK*nu(III,1));
+        betazero=betarnd(gamma+nu*bigK,m_dd-bigK*nu);
         for j=1:J
-            betadraws(j)=betarnd(betazero*(alpha_temp(j)+(m_j_dot(j))), ((1-betazero)*(alpha_temp(j)+m_j_dot(j))+ nn(j)- m_j_dot(j)));
-            K_j_post(j) = E_Kjl_simplified(betadraws(j),nu(III,1),gamma(III,1),bigK,...
-                alpha_temp(j),d_temp(j),betazero,m_j_dot(j),n_inc);
+            betadraws(j)=betarnd(betazero*(alpha(j)+(m_j_dot(j))), ((1-betazero)*(alpha(j)+m_j_dot(j))+ nn(j)- m_j_dot(j)));
+            %simplification of stefano with two summations
+            K_j_post(j) = E_Kjl_simplified(betadraws(j),nu,gamma,bigK,...
+                alpha(j),d(j),betazero,m_j_dot(j),n_inc);
         end
   
         [v_max, armchosen]= max(K_j_post);
+        clear v_max;
         w_HPY(armchosen)=w_HPY(armchosen)+1;
-        
         
         % Oracle
         [v_max armchosenOrac]=max(missingmass);
+        clear v_max;
         if length(armchosenOrac)>1
             Oracprob=ones(1,length(armchosenOrac))/armchosenOrac;
             armchosenOrac=gendiscr(armchosenOrac,Oracprob);
@@ -105,7 +209,7 @@ rng(III*100)
         armchosenGT = gendiscr(1:J,u_GT);
         w_GT(armchosenGT)=w_GT(armchosenGT)+1;
         
-        % Sample a unit for each strategy
+        % Sample a unit for each population
         newobservations=zeros(n_inc,J);
         for j=1:J
             for jj=1:n_inc
@@ -117,7 +221,7 @@ rng(III*100)
         newobsOrac=newobservations(:,armchosenOrac);
         newobsGT=newobservations(:,armchosenGT);
         
-        % Update Uniform
+        % update Uniform 
         newobsindUni(i) = 0;
         for jj=1:n_inc
         if sum(KuniUni==newunif(jj))==0
@@ -126,13 +230,6 @@ rng(III*100)
         end
         end
         
-        % Update parameters of HPY
-        % Save old parameters for new filtering algorithm
-        mjk_old = mjk;m_j_dot_old = m_j_dot;m_dd_old = m_dd; 
-        m_dot_k_old = m_dot_k;nj_dot_k_old = nj_dot_k; nn_old = nn;
-        bigK_old = bigK;
-        
-        % update tables 
         newobsindHPY(i) = 0;
         for jj=1:n_inc
         if sum(KuniHPY==newobsHPY(jj))==0
@@ -148,14 +245,15 @@ rng(III*100)
             mjk(armchosen,bigK)=1;
         else
             
-            % probability of old table with old observation
+            % calcolo la probabilit? di sedersi a un tavolo vecchio se
+            % l'osservazione ? vecchia
             olddistinct=find(KuniHPY==newobsHPY(jj));
-            probnewold=[nj_dot_k(armchosen,olddistinct)-d_temp(armchosen)*mjk(armchosen,olddistinct),...
-                (alpha_temp(armchosen)+m_j_dot(armchosen)*d_temp(armchosen))*((m_dot_k(olddistinct)-nu(III,1))/(gamma(III,1)+m_dd))];
+            probnewold=[nj_dot_k(armchosen,olddistinct)-d(armchosen)*mjk(armchosen,olddistinct),...
+                (alpha(armchosen)+m_j_dot(armchosen)*d(armchosen))*((m_dot_k(olddistinct)-nu)/(gamma+m_dd))];
             probnewold=probnewold/sum(probnewold);
             bern=binornd(1,probnewold(1));
             if bern==0
-                % observation is in a new table
+                % l'osservazione forma un nuovo tavolo
                 m_j_dot(armchosen)=m_j_dot(armchosen)+1;
                 m_dot_k(olddistinct)= m_dot_k(olddistinct)+1;
                 mjk(armchosen,olddistinct)=mjk(armchosen,olddistinct)+1;
@@ -165,22 +263,20 @@ rng(III*100)
         end
         
         nn(armchosen)=nn(armchosen)+1;
+        % aggiorno gli iperparamegtri del HPY utilizzando un MH
         end
+        [alpha, d ,gamma ,nu , M_parametri]=Filter_hyperparameters(...
+            mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri);
         
-        % update HPY hyperparameters with MH
-        [alpha(III,:), d(III,:) ,gamma(III,1) ,nu(III,1) , M_parametri]=Filter_hyperparameters_v1(...
-            mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri,...
-            mjk_old, m_j_dot_old,m_dd_old,m_dot_k_old,nj_dot_k_old,nn_old,...
-            bigK_old);
+    
         
-        
-        % Update Oracle
+        % Aggiorno i parametri di Oracle
         newobsindOra(i) = 0;
         for jj=1:n_inc
         if sum(KuniOracle==newobsOrac(jj))==0
             KuniOracle=[KuniOracle newobsOrac(jj)];
             newobsindOra(i)=newobsindOra(i)+1;
-            % update la missin mass
+            % aggiorno la missin mass
             for j=1:J
                 newlabel=find(pop{j}==newobsOrac(jj));
                 if isnan(newlabel)==0
@@ -190,7 +286,7 @@ rng(III*100)
         end
         end
         
-        % Update GT
+        % aggiorno i parametri di GT
         newobsindGT(i)=0;
         for jj=1:n_inc
         if sum(KuniGT==newobsGT(jj))==0
@@ -202,30 +298,36 @@ rng(III*100)
         
     end
     
-    % results MCMC
+    % risultati MCMC
     
     distcumHPY=cumsum(newobsindHPY);
     distcumUni=cumsum(newobsindUni);
     distcumOra=cumsum(newobsindOra);
     distcumGT=cumsum(newobsindGT);
     
-    DATAfinal_HPY(III,:)=distcumHPY;
-    DATAfinal_uniform(III,:)=distcumUni;
-    DATAfinal_Oracle(III,:)=distcumOra;
-    DATAfinal_GoodTulming(III,:)=distcumGT;
+    DATAfinal.HPY(III,:)=distcumHPY;
+    DATAfinal.uniform(III,:)=distcumUni;
+    DATAfinal.Oracle(III,:)=distcumOra;
+    DATAfinal.GoodTulming(III,:)=distcumGT;
     
-    WEIGTHS_HPY(III,:)=w_HPY;
-    WEIGTHS_uniform(III,:)=w_Uni;
-    WEIGTHS_Oracle(III,:)=w_Ora;
-    WEIGTHS_GoodTulming(III,:)=w_GT;
+    WEIGTHS.weigth_HPY(III,:)=w_HPY;
+    WEIGTHS.weight_uniform(III,:)=w_Uni;
+    WEIGTHS.weight_Oracle(III,:)=w_Ora;
+    WEIGTHS.weight_GoodTulming(III,:)=w_GT;
     
     III
     
     
-    % Storage just for one iteration of algorithm 
-    save_file = strcat('results_',string(III),'.mat');
-    save(save_file);
+end
 
-    
-    
+%to save workspace
+save('J40.mat')
 
+%save weights and add sample units
+%xlswrite('HPY.xls',transpose(sum(DATAfinal.HPY)/Runs));
+%xlswrite('unif.xls',transpose(sum(DATAfinal.uniform)/Runs));
+%xlswrite('GT.xls',transpose(sum(DATAfinal.GoodTulming)/Runs));
+%xlswrite('Oracle.xls',transpose(sum(DATAfinal.Oracle)/Runs));
+
+%per caricare dei vecchi valori
+% unif= csvread('unif.csv');

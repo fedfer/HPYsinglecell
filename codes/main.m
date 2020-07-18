@@ -2,8 +2,7 @@ clear all;
 close all;
 
 % number of iterations
-% Runs=50;
-Runs=2;
+Runs=50;
 
 
 %% Parameters
@@ -11,32 +10,26 @@ Runs=2;
 J = 5;
 
 % total number of species
-%N=300;
 N=3000;
 
 % number of species in each pop
-%NN=250*ones(J,1);
 NN=250*ones(J,1);
 
-% parametri per la Zipf
+% parameters of la Zipf
 Zipfpar=[1.3; 1.3; 1.3; 1.3; repelem(2,J - 4).'];
 
 % initial sample
 n_init=30*ones(J,1);
 % additional samples
-% addsample=300;
-addsample=5;
+addsample=300;
 
 % number of MCMC iterations
-% iter=35000;
-% burnin=15000;
-iter=350;
-burnin=150;
+iter=35000;
+burnin=15000;
 
 % number of iterations for particle filter
 % smaller than iter-burnin
-% N_iter=1000;
-N_iter=100;
+N_iter=1000;
 
 % parameters Good-Turing
 C=(1+sqrt(2))*sqrt(3);
@@ -45,11 +38,10 @@ C=(1+sqrt(2))*sqrt(3);
 M=zeros(Runs,addsample);
 DATAfinal=struct('HPY',M,'uniform',M,'Oracle',M,'GoodTuring',M);
 
-% weights
+% Weights
 M=zeros(Runs,J);
 WEIGTHS=struct('weight_HPY',M,'weight_uniform',M,'weight_Oracle',M,'weight_GoodTuring',M);
 clear M;
-
 
 
 % sample the species in each population 
@@ -80,7 +72,7 @@ for i=1:J
 end
 
 % sample data for each population 
-% data{j}= vector that contains the values for population j
+% data{j} = vector that contains the values for population j
 data=cell(1,J);
 for i=1:J
     data{i}=zeros(1,n_init(i));
@@ -91,25 +83,20 @@ for j=1:J
     end
 end
 dati_totali=cell2mat(data);
-% distinct species accross population
-Kini=unique(dati_totali);
-% total distincts
-tot_dist=length(Kini);
+Kini=unique(dati_totali); % distinct species accross population
+tot_dist=length(Kini); % total distincts
+
 
 % Inference on HPY hyperparameters
-
 M0=1;
 V0=4;
 bigK=length(Kini);
 
 % update with marginal algorithm 
-
 [M_Tavoli M_l_star M_parametri Dati_star k_popolazioni]=posterior_K(data,M0,V0,J,n_init,iter,burnin);
 
-
 % estimates the parameters that we need for bandits
-[mjk_ini, m_dot_k_ini, m_j_dot_ini, m_dd_ini alpha d gamma nu]=stima_parametri(M_l_star,tot_dist,M_parametri,J,iter-burnin);
-
+[mjk_ini, m_dot_k_ini, m_j_dot_ini, m_dd_ini alpha d gamma nu]=estimate_parameters(M_l_star,tot_dist,M_parametri,J,iter-burnin);
 
 M_parametri_ini=M_parametri(end-N_iter+1:end,:);
 
@@ -117,6 +104,7 @@ M_parametri_ini=M_parametri(end-N_iter+1:end,:);
 %  Unif, HPY Oracle GT
 
 for III=1:Runs
+    
     % Uniform sampling
     supp=1:J;
     masses=ones(1,J)/J;
@@ -140,8 +128,7 @@ for III=1:Runs
         end
     end
     
-    
-    % oracle
+    % Oracle
     KuniOracle=Kini;
     missingmass=zeros(1,J);
     for j=1:J
@@ -150,8 +137,7 @@ for III=1:Runs
         missingmass(j) = 1-sum(freq{j}(labelsseen));
     end
     
-    % Good--turing
-    
+    % Good--Turing
     KuniGT=Kini;
     nGT=n_init;
   
@@ -178,10 +164,6 @@ for III=1:Runs
     w_Ora=zeros(1,J);
     w_Uni=zeros(1,J);
     w_GT=zeros(1,J);
-    
-
-    
-    
     
     
     for i=1:addsample
@@ -225,8 +207,8 @@ for III=1:Runs
         
         w_GT(armchosenGT)=w_GT(armchosenGT)+1;
         
-        % sample a unit for each population
         
+        % Sample a unit for each population
         newobservations=zeros(1,J);
         for j=1:J
             newobservations(j) = gendiscr(pop{j},freq{j});
@@ -243,11 +225,9 @@ for III=1:Runs
         end
         
         % update HPY hyperparameters
-        % aggiungo una varaibile che mi dice che cosa aggiorno
-        % TP=2 Tavolo e piatto nuovo
-        % TP=1 Tavolo nuovo e piatto vecchio
-        % TP=0 Tavolo vecchio e piatto vecchio
-        % aggiornamento dei tavoli per HPY
+        % TP=2 New table and new dish 
+        % TP=1 New table and old dish
+        % TP=0 Old table and old dish
         TP=0;
         olddistinct=find(KuniHPY==newobsHPY);
         if sum(KuniHPY==newobsHPY)==0
@@ -283,13 +263,13 @@ for III=1:Runs
         nn(armchosen)=nn(armchosen)+1;
         
 
-        %  particle filter
+        % Particle filter for hyperparameters
         [ alpha, d ,gamma ,nu , M_parametri]=Filter_hyperparameters(...
             mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri,...
             armchosen,olddistinct,TP);
         
-        % update Oracle
         
+        % update Oracle
         if sum(KuniOracle==newobsOrac)==0
             KuniOracle=[KuniOracle newobsOrac];
             newobsindOra(i)=1;
@@ -304,7 +284,6 @@ for III=1:Runs
         
         
         % update GT
-        
         if sum(KuniGT==newobsGT)==0
             KuniGT=[KuniGT newobsGT];
             unGT{armchosenGT}=[unGT{armchosenGT} newobsGT];
@@ -327,7 +306,6 @@ for III=1:Runs
     end
     
     % results MCMC
-    
     distcumHPY=cumsum(newobsindHPY);
     distcumUni=cumsum(newobsindUni);
     distcumOra=cumsum(newobsindOra);
@@ -348,24 +326,3 @@ for III=1:Runs
     
 end
 
-
-% plots
-plot(1:addsample,sum(DATAfinal.HPY)/Runs,'r');
-hold on
-plot(1:addsample,sum(DATAfinal.uniform)/Runs,'g');
-plot(1:addsample,sum(DATAfinal.Oracle)/Runs,'b');
-plot(1:addsample,sum(DATAfinal.GoodTuring)/Runs,'k');
-
-%legend('HPY','Uniform','Oracle','UCB','Location','NorthWest');
-
-M=zeros(1,addsample);
-Final=struct('uniform',M,'Oracle',M,'GoodTuring',M,'GoodTuring2',M,'GoodTuring3',M);
-
-Final.uniform=sum(DATAfinal.uniform)/Runs;
-Final.HPY=sum(DATAfinal.HPY)/Runs;
-Final.GoodTuring=sum(DATAfinal.GoodTuring)/Runs;
-Final.GoodTuring2=sum(DATAfinal.GoodTuring2)/Runs;
-Final.GoodTuring3=sum(DATAfinal.GoodTuring3)/Runs;
-xlswrite('HPY.xls',transpose(Final.HPY))
-xlswrite('GT.xls',transpose(Final.HPY))
-% unif= csvread('unif.csv');
