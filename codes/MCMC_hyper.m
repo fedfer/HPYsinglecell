@@ -1,6 +1,6 @@
-% update parameters using 4 MH
+% update parameters alpha, gamma, d and nu using Metropolis-Hastings steps
 
-function  [ alpha, d ,gamma ,nu]=MCMC_iperparametri(mjk,m_j_dot,m_dd,J,nn,iter1,burnin1,alpha,d,gamma,nu,bigK)
+function  [ alpha, d ,gamma ,nu]=MCMC_hyper(mjk,m_j_dot,m_dd,J,nn,iter1,burnin1,alpha,d,gamma,nu,bigK)
 
 M_alpha=zeros(iter1-burnin1,J);
 M_d=zeros(iter1-burnin1,J);

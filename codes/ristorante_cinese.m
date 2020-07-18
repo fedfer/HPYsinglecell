@@ -58,7 +58,7 @@ for ii=1:T
 
     % update the parametes using 4 MH
     for j=1:J
-        [Dati_star{j}, Tavoli_star{j}, TavoliDati_star{j}, n_star{j}, q_star{j}, l_star{j}] = distinti(Dati{j}, Tavoli{j});
+        [Dati_star{j}, Tavoli_star{j}, TavoliDati_star{j}, n_star{j}, q_star{j}, l_star{j}] = distinct_fct(Dati{j}, Tavoli{j});
         L(j)=sum(l_star{j});
         if ii>t_burn
 
@@ -74,7 +74,7 @@ for ii=1:T
         
     end
     
-[ alpha, d ,gamma ,nu]=MCMC_iperparametri(mjk,m_j_dot,m_dd,J,n_init,2,0,alpha,d,gamma,nu,k);
+[ alpha, d ,gamma ,nu]=MCMC_hyper(mjk,m_j_dot,m_dd,J,n_init,2,0,alpha,d,gamma,nu,k);
     
     if ii>t_burn
         for j=1:J

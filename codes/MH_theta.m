@@ -1,8 +1,7 @@
-% MH update theta and theta_0 with proposal exp(1)
+% Metropolis-Hastings update theta and theta_0 with proposal exp(1)
 function [theta_new rho]=MH_theta(theta_old,sigma,Lj,nj)
 
 % exponential proposal distribution
-
 theta_p=exprnd(1);
 
 vec1=1:(Lj-1);

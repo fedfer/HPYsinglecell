@@ -57,7 +57,7 @@ for ii=1:T
     % update hyperparameters 4 MH
     l_star_franchise=zeros(1,k);
     for j=1:J
-        [Dati_star{j}, Tavoli_star{j}, TavoliDati_star{j}, n_star{j}, q_star{j}, l_star{j}] = distinti(Dati{j}, Tavoli{j});
+        [Dati_star{j}, Tavoli_star{j}, TavoliDati_star{j}, n_star{j}, q_star{j}, l_star{j}] = distinct_fct(Dati{j}, Tavoli{j});
         L(j)=sum(l_star{j});
         I=(ismember(Dati_totali_star,Dati_star{j}));
         l_star_franchise(I)=l_star_franchise(I)+l_star{j};

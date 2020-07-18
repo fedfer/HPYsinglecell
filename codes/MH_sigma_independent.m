@@ -1,10 +1,9 @@
-% MH for sigma and sigma_0
-function [sigma_new]=MH_sigma(sigma_old,theta,n_star)
+% Metropolis-Hastings for sigma and sigma_0
+function [sigma_new]=MH_sigma_independent(sigma_old,theta,n_star)
 
 k=length(n_star);
 
-% come proposal scelgo uniforme
-
+% Use the uniform distribution as proposal
 sigma_p=unifrnd(0,1);
 
 vec=cumsum(ones(1,k-1));

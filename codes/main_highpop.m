@@ -285,12 +285,8 @@ for III=1:Runs
         
         nn(armchosen)=nn(armchosen)+1;
         % aggiorno gli iperparamegtri del HPY utilizzando un MH
-        %  [ alpha, d ,gamma ,nu]=MCMC_iperparametri(mjk,m_j_dot,m_dd,J,nn,iter1,burnin1,alpha,d,gamma,nu,bigK);
-        % aggiorno gli iperparametri utilizzando il particle filter
-        %[alpha, d ,gamma ,nu , M_parametri]=Filter_iperparametri(...
-        %    mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri);
         end
-        [alpha, d ,gamma ,nu , M_parametri]=Filter_iperparametri(...
+        [alpha, d ,gamma ,nu , M_parametri]=Filter_hyperparameters(...
             mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri);
         
     

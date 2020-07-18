@@ -1,15 +1,15 @@
 % function to compute the normalized weights of particle filter
 
     
-function [M_iperparametri_new_unnormalized omega]=pesi_filter_new(mjk,m_j_dot...
-    ,m_dd,m_dot_k,n_j_dot_k,J,nn,bigK,N_iter,g,g_cum,h,medie_mx,cov_parametri)
+function [M_hyper_new_unnormalized omega]=weight_filter_new(mjk,m_j_dot...
+    ,m_dd,m_dot_k,n_j_dot_k,J,nn,bigK,N_iter,g,g_cum,h,mean_mx,cov_parameters)
 
 % weights of p(y|m_k)
 p=zeros(1,N_iter);
 % log of probabilities
 logp_new=zeros(1,N_iter);
 
-M_iperparametri_new_unnormalized=zeros(N_iter,2*J+2);
+M_hyper_new_unnormalized=zeros(N_iter,2*J+2);
 
 vec=1:(bigK-1);
 for jj=1:N_iter
@@ -17,14 +17,14 @@ for jj=1:N_iter
     ind=find(U<g_cum);
     ind=ind(1);
     % step 2 of Algorithm 2
-    M_iperparametri_new_unnormalized(jj,:)=mvnrnd(medie_mx(ind,:),h^2*cov_parametri);
-    alpha=M_iperparametri_new_unnormalized(jj,1:J);
-    d=M_iperparametri_new_unnormalized(jj,(J+1):(2*J));
-    gamma=M_iperparametri_new_unnormalized(jj,2*J+1);
-    nu=M_iperparametri_new_unnormalized(jj,2*J+2);
+    M_hyper_new_unnormalized(jj,:)=mvnrnd(mean_mx(ind,:),h^2*cov_parameters);
+    alpha=M_hyper_new_unnormalized(jj,1:J);
+    d=M_hyper_new_unnormalized(jj,(J+1):(2*J));
+    gamma=M_hyper_new_unnormalized(jj,2*J+1);
+    nu=M_hyper_new_unnormalized(jj,2*J+2);
     Phi=0;
     for j=1:J
-        %  l'EPPF for restaurant j (explog)
+        %  EPPF for restaurant j (explog)
         vec_j=1:(m_j_dot(j)-1);
         % find max of n_j.k for generalized factorial coeffs
         max_nj=max(n_j_dot_k(j,:));

@@ -1,6 +1,6 @@
 % Function to generate a matrix with logs of generalized factorial coefficients, using
 % the recurrency relation. 
-% Instead of C(n,l), we will have the log of C(n-1,l-1,s) since we wanto to have 
+% Instead of C(n,l), we will have the log of C(n-1,l-1,s) since we want to have 
 % the coefficients with n=0 and l = 0
 
 

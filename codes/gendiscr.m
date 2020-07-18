@@ -4,6 +4,6 @@ function y=gendiscr(supp,masses)
 
 U=unifrnd(0,1);
 Pcum=cumsum(masses);
-indice=find(U<=Pcum);
-indice=indice(1);
-y=supp(indice);
+index=find(U<=Pcum);
+index=index(1);
+y=supp(index);
