@@ -3,8 +3,6 @@ function [val]=E_Kjl_MC(p_j,alpha,gamma,big_K,theta_j,sigma_j,b_0,m_j_dot,l,S)
     probs = zeros(l,1);
     
     for m_hat = 0:l
-        % see if we can take out the dependence on i to have the
-        % probabilities that can be normalized at each step
         probs(l,1) = F_nk(i,m_hat,sigma_j,(theta_j+m_j_dot*sigma_j)*b_0,C2(i+1,m_hat+1));
     end
     

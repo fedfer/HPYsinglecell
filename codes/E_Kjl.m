@@ -1,4 +1,4 @@
-%function to compute E(K_j^l | Y_n,b_0,p_k)
+% function to compute E(K_j^l | Y_n,b_0,p_k)
 function [val]=E_Kjl(p_j,l,T)
     val_mat = zeros(l,l);
     for k=1:l

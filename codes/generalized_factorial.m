@@ -23,7 +23,7 @@ for n=2:N
         if x==inf
 
             x=log(n-1-s*(l-1))+LogC(n,l)-LogC(n,l-1);
-            disp('Approssimazione di x');
+            disp('Approximation of x');
         end
         LogC(n+1,l)= LogC(n,l-1)+x;
     end

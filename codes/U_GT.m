@@ -1,6 +1,6 @@
 function u = U_GT(f,t)
 
-% Input:  ration of future samples and past samples, t
+% Input:  ratio of future samples and past samples, t
 %         fingerprint,f
 % Output: GT estimator, if t \ge 1, then we compute the smoothed version
 % with the poisson distribution

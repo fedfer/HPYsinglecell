@@ -51,7 +51,7 @@ end
 for ii=1:T
 
     for j=1:J
-        Tavoli{j}=aggiorna_tavoli_n(j,J,Dati,Tavoli,theta_0,sigma_0,theta(j),sigma(j),n_init,M0,V0);
+        Tavoli{j}=update_tables_n(j,J,Dati,Tavoli,theta_0,sigma_0,theta(j),sigma(j),n_init,M0,V0);
     end
 
     % update hyperparameters 4 MH

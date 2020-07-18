@@ -1,4 +1,4 @@
-function [Xs Ts XTs ns qs ls indici_XTs] = distinti(X, T)
+function [Xs Ts XTs ns qs ls indici_XTs] = distinct_fct(X, T)
 
 % Function that finds the freq of distincts values for dishes X and tables T
 
@@ -15,10 +15,10 @@ XT_ordinati=sortrows([X; T]')';
 X_ordinati= XT_ordinati(1,:);
 T_ordinati= XT_ordinati(2,:);
 
-% creo due vettori:
-% Xs = vettore costituito dai valori distinti contenuti in oX (cio?? in  X).
-% Tali valori sono ordinati.
-% ns = vettore con le frequenze con cui compaiono i valori di Xs in X.
+% Creat to vectors
+% Xs = containing the distinct values in X_ordered (same of  X).
+% Thos values are ordered 
+% ns = vector of frequencies of Xs in X.
 
 [Xs indici_X]=unique(X_ordinati,'legacy');
 ns=diff([0 indici_X]);

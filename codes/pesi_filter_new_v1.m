@@ -27,7 +27,7 @@ for jj=1:N_iter
     nu=M_iperparametri_new_unnormalized(jj,2*J+2);
     Phi=0;
     for j=1:J
-        %  l'EPPF for restaurant j (explog)
+        %  EPPF for restaurant j (explog)
         vec_j=1:(m_j_dot(j)-1);
         vec_j_old=1:(m_j_dot_old(j)-1);
         % find max of n_j.k for generalized factorial coeffs

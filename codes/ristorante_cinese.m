@@ -29,7 +29,7 @@ k_popolazioni=zeros(1,J);
 for j=1:J
     Tavoli{j}=normrnd(sum(Dati{j})/n_init(j),1,1,n_init(j));
     M_Tavoli{j}=zeros(N,n_init(j));
-    Dati_star{j}=clusterizza(Dati{j});
+    Dati_star{j}=cluster_fct(Dati{j});
     k_popolazioni(j)=length(Dati_star{j});
     Dati_totali=[Dati_totali Dati{j}];
 end
@@ -52,7 +52,7 @@ m_j_dot=zeros(1,J);
 for ii=1:T
 
     for j=1:J
-        Tavoli{j}=aggiorna_tavoli_n(j,J,Dati,Tavoli,gamma,nu,alpha(j),d(j),n_init,M0,V0);
+        Tavoli{j}=update_tables_n(j,J,Dati,Tavoli,gamma,nu,alpha(j),d(j),n_init,M0,V0);
     end
 
 
