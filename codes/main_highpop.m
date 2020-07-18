@@ -16,7 +16,7 @@ J=40;
 % number of species in each pop
 NN=2500*ones(J,1);
 
-% parameters of la Zipf
+% parameters of Zipf
 Zipfpar=[1.3; 1.3; 1.3; 1.3; repelem(2,J - 4).'];
 
 % initial sample
@@ -36,13 +36,9 @@ N_iter=1000;
 % populations that have u_Gt = 0
 alpha_GT = 0.1;
 
-% initial sample
-n_init=20*ones(J,1);
-% extra samples at each step
-addsample=20;
-% units sampled each additional trial
-n_inc = 100;
-
+n_init=20*ones(J,1); % initial sample
+addsample=20; % extra samples at each step
+n_inc = 100; % units sampled each additional trial
 
 % Final storage
 M=zeros(Runs,addsample);
