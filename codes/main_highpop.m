@@ -2,7 +2,7 @@ clear all;
 close all;
 
 % add path for Computing
-addpath('/work/sta790/ff31/HPYsinglecell/codes')  
+% addpath('/work/sta790/ff31/HPYsinglecell/codes')  
 
 % number of iterations
 Runs=50;
@@ -88,8 +88,8 @@ for j=1:J
     end
 end
 
-dati_totali=cell2mat(data);
-Kini=unique(dati_totali); % distinct species accross population
+data_total=cell2mat(data);
+Kini=unique(data_total); % distinct species accross population
 tot_dist=length(Kini); % total distincts
 
 % Inference on HPY hyperparameters
@@ -98,12 +98,12 @@ V0=4;
 bigK=length(Kini);
 
 % update with marginal algorithm 
-[M_Tavoli M_l_star M_parametri Dati_star k_popolazioni]=posterior_K(data,M0,V0,J,n_init,iter,burnin);
+[M_Tables M_l_star M_parameters Data_star k_pop]=posterior_K(data,M0,V0,J,n_init,iter,burnin);
 
 % estimates the parameters that we need for bandits
-[mjk_ini, m_dot_k_ini, m_j_dot_ini, m_dd_ini alpha d gamma nu]=estimate_parameters(M_l_star,tot_dist,M_parametri,J,iter-burnin);
+[mjk_ini, m_dot_k_ini, m_j_dot_ini, m_dd_ini alpha d gamma nu]=estimate_parameters(M_l_star,tot_dist,M_parameters,J,iter-burnin);
 
-M_parametri_ini=M_parametri(end-N_iter+1:end,:);
+M_parameters_ini=M_parameters(end-N_iter+1:end,:);
 
 
 %% Algorithm to choose from which sample the next oservation for the competitors
@@ -124,7 +124,7 @@ for III=1:Runs
     m_dot_k=m_dot_k_ini;
     m_j_dot=m_j_dot_ini;
     m_dd=m_dd_ini;
-    M_parametri=M_parametri_ini;
+    M_parameters=M_parameters_ini;
     
     % compute n.k
     nj_dot_k=zeros(J,tot_dist);
@@ -161,7 +161,6 @@ for III=1:Runs
     
     
     
-    
     for i=1:addsample
         
         % Uniform
@@ -175,7 +174,6 @@ for III=1:Runs
         betazero=betarnd(gamma+nu*bigK,m_dd-bigK*nu);
         for j=1:J
             betadraws(j)=betarnd(betazero*(alpha(j)+(m_j_dot(j))), ((1-betazero)*(alpha(j)+m_j_dot(j))+ nn(j)- m_j_dot(j)));
-            %simplification of stefano with two summations
             K_j_post(j) = E_Kjl_simplified(betadraws(j),nu,gamma,bigK,...
                 alpha(j),d(j),betazero,m_j_dot(j),n_inc);
         end
@@ -248,7 +246,7 @@ for III=1:Runs
             bern=binornd(1,probnewold(1));
             
             if bern==0
-
+                
                 m_j_dot(armchosen)=m_j_dot(armchosen)+1;
                 m_dot_k(olddistinct)= m_dot_k(olddistinct)+1;
                 mjk(armchosen,olddistinct)=mjk(armchosen,olddistinct)+1;
@@ -261,10 +259,11 @@ for III=1:Runs
         end
         
         % Particle filter for hyperparameters
-        [alpha, d ,gamma ,nu , M_parametri]=Filter_hyperparameters(...
-            mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri);
+        [alpha, d ,gamma ,nu , M_parameters] = Filter_hyperparameters_v1(...
+            mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parameters,...
+            mjk_old, m_j_dot_old,m_dd_old,m_dot_k_old,nj_dot_k_old,nn_old,...
+            bigK_old);
         
-    
         
         % update Oracle
         newobsindOra(i) = 0;

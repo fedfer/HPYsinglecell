@@ -100,8 +100,8 @@ for j=1:J
     end
 end
 
-dati_totali=cell2mat(data);
-Kini=unique(dati_totali); % distinct species accross population
+data_total=cell2mat(data);
+Kini=unique(data_total); % distinct species accross population
 tot_dist=length(Kini); % total distincts
 
 % Inference on HPY hyperparameters
@@ -110,16 +110,16 @@ V0=4;
 bigK=length(Kini);
 
 % update with marginal algorithm 
-[M_Tavoli M_l_star M_parametri Dati_star k_popolazioni]=posterior_K(data,M0,V0,J,n_init,iter,burnin);
+[M_Tables M_l_star M_parameters Data_star k_pop]=posterior_K(data,M0,V0,J,n_init,iter,burnin);
 
 % estimates the parameters that we need for bandits
-[mjk_ini, m_dot_k_ini, m_j_dot_ini, m_dd_ini alpha d gamma nu]=stima_parametri(M_l_star,tot_dist,M_parametri,J,iter-burnin);
+[mjk_ini, m_dot_k_ini, m_j_dot_ini, m_dd_ini alpha d gamma nu]= estimate_parameters(M_l_star,tot_dist,M_parameters,J,iter-burnin);
 gamma = repmat(gamma,Runs,1);
 nu = repmat(nu,Runs,1);
 alpha = repmat(alpha,Runs,1);
 d = repmat(d,Runs,1);
 
-M_parametri_ini=M_parametri(end-N_iter+1:end,:);
+M_parametri_ini=M_parameters(end-N_iter+1:end,:);
 
 
 disp('finish first estimation')

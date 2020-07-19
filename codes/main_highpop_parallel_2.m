@@ -1,7 +1,7 @@
 % LOAD THE the estimates of MCMC and addpath
-load('/work/sta790/ff31/MCMC_estimation_paper.mat')  
-addpath('/work/sta790/ff31/HPYsinglecell/codes')  
-addpath('/work/sta790/ff31/HPYsinglecell/codes/hyper') 
+% load('/work/sta790/ff31/MCMC_estimation_paper.mat')  
+% addpath('/work/sta790/ff31/HPYsinglecell/codes')  
+% addpath('/work/sta790/ff31/HPYsinglecell/codes/hyper') 
 
 % get job array ID
 III = str2num(getenv('SLURM_ARRAY_TASK_ID'));
@@ -20,7 +20,7 @@ rng(III*100)
     m_dot_k=m_dot_k_ini;
     m_j_dot=m_j_dot_ini;
     m_dd=m_dd_ini;
-    M_parametri=M_parametri_ini;
+    M_parameters=M_parameters_ini;
     
     % calcolo n.k
     nj_dot_k=zeros(J,tot_dist);
@@ -168,8 +168,8 @@ rng(III*100)
         end
         
         % update HPY hyperparameters with MH
-        [alpha(III,:), d(III,:) ,gamma(III,1) ,nu(III,1) , M_parametri]=Filter_hyperparameters_v1(...
-            mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri,...
+        [alpha(III,:), d(III,:) ,gamma(III,1) ,nu(III,1) , M_parameters]=Filter_hyperparameters_v1(...
+            mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parameters,...
             mjk_old, m_j_dot_old,m_dd_old,m_dot_k_old,nj_dot_k_old,nn_old,...
             bigK_old);
         
@@ -203,7 +203,6 @@ rng(III*100)
     end
     
     % results MCMC
-    
     distcumHPY=cumsum(newobsindHPY);
     distcumUni=cumsum(newobsindUni);
     distcumOra=cumsum(newobsindOra);

@@ -1,6 +1,5 @@
 % Function to compute the generalized factorial coefficients 
 
-
 function c=loggfc(alpha,n)
 
 if n<=0

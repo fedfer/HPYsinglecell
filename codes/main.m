@@ -82,8 +82,8 @@ for j=1:J
         data{j}(i)=gendiscr(pop{j},freq{j});
     end
 end
-dati_totali=cell2mat(data);
-Kini=unique(dati_totali); % distinct species accross population
+data_total=cell2mat(data);
+Kini=unique(data_total); % distinct species accross population
 tot_dist=length(Kini); % total distincts
 
 
@@ -93,12 +93,12 @@ V0=4;
 bigK=length(Kini);
 
 % update with marginal algorithm 
-[M_Tavoli M_l_star M_parametri Dati_star k_popolazioni]=posterior_K(data,M0,V0,J,n_init,iter,burnin);
+[M_Tables M_l_star M_parameters Data_star k_pop]=posterior_K(data,M0,V0,J,n_init,iter,burnin);
 
 % estimates the parameters that we need for bandits
-[mjk_ini, m_dot_k_ini, m_j_dot_ini, m_dd_ini alpha d gamma nu]=estimate_parameters(M_l_star,tot_dist,M_parametri,J,iter-burnin);
+[mjk_ini, m_dot_k_ini, m_j_dot_ini, m_dd_ini alpha d gamma nu]=estimate_parameters(M_l_star,tot_dist,M_parameters,J,iter-burnin);
 
-M_parametri_ini=M_parametri(end-N_iter+1:end,:);
+M_parameter_ini=M_parameters(end-N_iter+1:end,:);
 
 %% Algorithm to choose from which sample the next oservation for the competitors
 %  Unif, HPY Oracle GT
@@ -118,7 +118,7 @@ for III=1:Runs
     m_dot_k=m_dot_k_ini;
     m_j_dot=m_j_dot_ini;
     m_dd=m_dd_ini;
-    M_parametri=M_parametri_ini;
+    M_parameters=M_parameter_ini;
     
     % compute n.k
     nj_dot_k=zeros(J,tot_dist);
@@ -141,7 +141,7 @@ for III=1:Runs
     KuniGT=Kini;
     nGT=n_init;
   
-    [data_uni freq_uni]=clusterizza(cell2mat(data));
+    [data_uni freq_uni]=cluster_fct(cell2mat(data));
     unGT_tot=data_uni(freq_uni==1);
     clear data_uni freq_uni;
 
@@ -264,8 +264,8 @@ for III=1:Runs
         
 
         % Particle filter for hyperparameters
-        [ alpha, d ,gamma ,nu , M_parametri]=Filter_hyperparameters(...
-            mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri,...
+        [ alpha, d ,gamma ,nu , M_parameters]=Filter_hyperparameters(...
+            mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parameters,...
             armchosen,olddistinct,TP);
         
         
@@ -294,12 +294,12 @@ for III=1:Runs
         if sum(unGT_tot==newobsGT)
             for j=1:J
                 if sum(unGT{j}==newobsGT)
-                    indice=find(unGT{j}==newobsGT);
-                    unGT{j}(indice)=[];
+                    index=find(unGT{j}==newobsGT);
+                    unGT{j}(index)=[];
                 end
             end
-            indice=find(unGT_tot==newobsGT);
-            unGT_tot(indice)=[];
+            index=find(unGT_tot==newobsGT);
+            unGT_tot(index)=[];
         end
         nGT(armchosenGT)=nGT(armchosenGT)+1;
         

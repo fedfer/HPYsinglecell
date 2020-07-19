@@ -62,10 +62,10 @@ for j=1:J
         data{j}(i)=gendiscr(pop{j},freq{j});
     end
 end
-dati_totali=cell2mat(data);
+data_total=cell2mat(data);
 
 
-Kini=unique(dati_totali); % distinct species accross population
+Kini=unique(data_total); % distinct species accross population
 tot_dist=length(Kini); % total distincts
 
 %% Algorithm to choose from which sample the next oservation for the competitors
@@ -74,17 +74,17 @@ M0=1;
 V0=4;
 bigK=length(Kini);
 
-[M_Tavoli, M_l_star, M_parametri, Dati_star, k_popolazioni]=posterior_K(data,M0,V0,J,n_init,iter,burnin);
+[M_Tables, M_l_star, M_parameters, Data_star, k_pop]=posterior_K(data,M0,V0,J,n_init,iter,burnin);
 
 
-[mjk_ini, m_dot_k_ini, m_j_dot_ini, m_dd_ini, alpha, d, gamma, nu]=estimate_parameters(M_l_star,tot_dist,M_parametri,J,iter-burnin);
+[mjk_ini, m_dot_k_ini, m_j_dot_ini, m_dd_ini, alpha, d, gamma, nu]=estimate_parameters(M_l_star,tot_dist,M_parameters,J,iter-burnin);
 gamma = repmat(gamma,Runs,1);
 nu = repmat(nu,Runs,1);
 alpha = repmat(alpha,Runs,1);
 d = repmat(d,Runs,1);
 
 
-M_parametri_ini=M_parametri(end-N_iter+1:end,:);
+M_parameters_ini=M_parameters(end-N_iter+1:end,:);
 
 
 for III=1:Runs
@@ -101,7 +101,7 @@ for III=1:Runs
     m_dot_k=m_dot_k_ini;
     m_j_dot=m_j_dot_ini;
     m_dd=m_dd_ini;
-    M_parametri=M_parametri_ini;
+    M_parameters=M_parameters_ini;
     
     %  n.k
     nj_dot_k=zeros(J,tot_dist);
@@ -241,8 +241,8 @@ for III=1:Runs
         nn(armchosen)=nn(armchosen)+1;
         end
         
-        [alpha(III,:), d(III,:) ,gamma(III,1) ,nu(III,1) , M_parametri]=Filter_iperparametri_v1(...
-            mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parametri,...
+        [alpha(III,:), d(III,:) ,gamma(III,1) ,nu(III,1) , M_parameters]=Filter_iperparametri_v1(...
+            mjk,m_j_dot,m_dd,m_dot_k,nj_dot_k,J,nn,bigK,N_iter,M_parameters,...
             mjk_old, m_j_dot_old,m_dd_old,m_dot_k_old,nj_dot_k_old,nn_old,...
             bigK_old);
         
